@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>User Manual – Virtual Science Lab | NEP 2020</title>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#00d4ff"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Exo+2:wght@300;400;600&family=Space+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#050810;--bg2:#0a0e1a;--card:#0d1425;--cyan:#00d4ff;--green:#00ff88;--orange:#ff6b35;--yellow:#ffd700;--text:#e8f0fe;--muted:#94a3b8;--border:rgba(0,212,255,0.15)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+.nav{position:sticky;top:0;z-index:100;background:rgba(5,8,16,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:1rem;height:60px;flex-wrap:wrap}
+.nav-logo{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:800;color:var(--cyan);cursor:pointer;letter-spacing:1px}
+.nav a{color:var(--muted);font-size:.78rem;text-decoration:none;padding:.4rem .75rem;border-radius:6px;border:1px solid transparent;transition:.3s}
+.nav a:hover{color:var(--cyan);border-color:var(--border)}
+.page{max-width:850px;margin:0 auto;padding:2rem 1.5rem 4rem;position:relative;z-index:1}
+.page-hero{text-align:center;margin-bottom:2.5rem}
+.page-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:50px;padding:.4rem 1rem;font-size:.75rem;font-family:'Space Mono',monospace;color:var(--cyan);margin-bottom:1rem;letter-spacing:1px}
+.page-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;background:linear-gradient(135deg,#fff,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.75rem}
+.page-sub{color:var(--muted);font-size:.9rem;max-width:600px;margin:0 auto}
+.author-bar{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:2rem;position:relative;overflow:hidden}
+.author-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--green),transparent)}
+.author-bar img{width:55px;height:55px;border-radius:50%;object-fit:cover;border:2px solid var(--cyan);flex-shrink:0}
+.author-bar-info strong{font-family:'Orbitron',monospace;font-size:.82rem;color:var(--cyan);display:block;margin-bottom:.15rem}
+.author-bar-info span{font-size:.75rem;color:var(--muted)}
+.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem}
+.toc-title{font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;color:var(--cyan);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.4rem}
+.toc-item{display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;border-radius:6px;cursor:pointer;transition:.2s;font-size:.82rem;color:var(--muted);text-decoration:none}
+.toc-item:hover{background:rgba(0,212,255,.06);color:var(--cyan)}
+.toc-num{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--cyan);font-weight:700;width:24px;flex-shrink:0}
+.section-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.75rem;margin-bottom:1.5rem;scroll-margin-top:80px;position:relative;overflow:hidden}
+.section-block::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--cyan),var(--green))}
+.sec-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+.sec-num{font-family:'Orbitron',monospace;font-size:.65rem;color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);padding:.2rem .5rem;border-radius:4px;font-weight:700}
+.sec-title{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--cyan);letter-spacing:1px;text-transform:uppercase}
+.sec-icon{font-size:1.3rem}
+p{font-size:.87rem;color:var(--muted);line-height:1.8;margin-bottom:.85rem}
+p:last-child{margin-bottom:0}
+ul,ol{padding-left:1.5rem;margin:.5rem 0}
+li{font-size:.87rem;color:var(--muted);line-height:1.8;margin-bottom:.35rem}
+.step-card{background:rgba(0,0,0,.3);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:.6rem 0}
+.step-label{font-family:'Orbitron',monospace;font-size:.68rem;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:.35rem;text-transform:uppercase}
+.step-desc{font-size:.85rem;color:var(--muted);line-height:1.7}
+.highlight{color:var(--cyan);font-weight:600}
+.green{color:var(--green);font-weight:600}
+.orange{color:var(--orange);font-weight:600}
+.yellow{color:var(--yellow);font-weight:600}
+.callout{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:1rem 1.25rem;margin:.75rem 0;font-size:.85rem;color:var(--muted);line-height:1.7}
+.callout strong{color:var(--cyan)}
+.method-timeline{margin:1rem 0}
+.method-step{display:flex;gap:1rem;margin-bottom:.75rem}
+.method-dot{width:32px;height:32px;border-radius:50%;background:rgba(0,212,255,.1);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.72rem;color:var(--cyan);font-weight:700;flex-shrink:0;margin-top:.1rem}
+.method-content{flex:1}
+.method-title{font-family:'Orbitron',monospace;font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:.2rem;letter-spacing:.5px}
+.method-desc{font-size:.83rem;color:var(--muted);line-height:1.6}
+.control-guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin:.75rem 0}
+.ctrl-item{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:.85rem}
+.ctrl-name{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--cyan);font-weight:700;margin-bottom:.3rem}
+.ctrl-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.badge-guide{display:flex;flex-wrap:wrap;gap:.75rem;margin:.75rem 0}
+.badge-item{background:var(--card);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:.75rem 1rem;text-align:center;min-width:110px}
+.badge-icon{font-size:1.5rem;display:block;margin-bottom:.25rem}
+.badge-name{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--yellow)}
+.badge-how{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.nep-box{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,136,.06));border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:1.25rem;margin:.75rem 0}
+.nep-box-title{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--cyan);font-weight:700;margin-bottom:.75rem;letter-spacing:1px}
+.nep-row{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem}
+.nep-icon{font-size:1rem;flex-shrink:0;margin-top:.1rem}
+.nep-text{font-size:.83rem;color:var(--muted);line-height:1.6}
+.footer-author{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-top:2rem}
+.footer-author img{width:55px;height:55px;border-radius:50%;object-fit:cover;border:2px solid var(--cyan)}
+.footer-info{font-size:.78rem;color:var(--muted)}
+.footer-info strong{color:var(--cyan);font-family:'Orbitron',monospace;font-size:.8rem}
+@media(max-width:500px){.author-bar{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo" onclick="location.href='index.html'">⚗️ VIRTUAL SCIENCE LAB</div>
+  <a href="index.html">🏠 Home</a>
+  <a href="about.html">ℹ️ About</a>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="page-badge">📖 COMPLETE USER MANUAL — NEP 2020 &amp; NCF 2023</div>
+    <h1 class="page-title">User Manual</h1>
+    <p class="page-sub">A complete guide to every feature, tab, simulation, and function of the Virtual Science Lab — written for students and teachers.</p>
+  </div>
+
+  <div class="author-bar">
+    <img src="author.jpg" alt="Mateen Yousuf"/>
+    <div class="author-bar-info">
+      <strong>Mateen Yousuf</strong>
+      <span>Teacher – School Education Department, J&amp;K &nbsp;|&nbsp; Concept Developer, Virtual Science Lab &nbsp;|&nbsp; NEP 2020 &amp; NCF 2023</span>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <div class="toc-title">📋 Table of Contents</div>
+    <div class="toc-grid">
+      <a class="toc-item" href="#s01"><span class="toc-num">01</span>Getting Started &amp; Installation</a>
+      <a class="toc-item" href="#s02"><span class="toc-num">02</span>Navigation &amp; Interface</a>
+      <a class="toc-item" href="#s03"><span class="toc-num">03</span>Physics Lab – Full Guide</a>
+      <a class="toc-item" href="#s04"><span class="toc-num">04</span>Chemistry Lab – Full Guide</a>
+      <a class="toc-item" href="#s05"><span class="toc-num">05</span>Biology Lab – Full Guide</a>
+      <a class="toc-item" href="#s06"><span class="toc-num">06</span>Simulations Step-by-Step</a>
+      <a class="toc-item" href="#s07"><span class="toc-num">07</span>Lab Notebook – How to Use</a>
+      <a class="toc-item" href="#s08"><span class="toc-num">08</span>Quizzes &amp; Assessment</a>
+      <a class="toc-item" href="#s09"><span class="toc-num">09</span>Achievements &amp; Badges</a>
+      <a class="toc-item" href="#s10"><span class="toc-num">10</span>Teacher's Guide</a>
+      <a class="toc-item" href="#s11"><span class="toc-num">11</span>Scientific Method Guide</a>
+      <a class="toc-item" href="#s12"><span class="toc-num">12</span>NEP 2020 &amp; NCF Integration</a>
+    </div>
+  </div>
+
+  <!-- 01 Installation -->
+  <div class="section-block" id="s01">
+    <div class="sec-header"><span class="sec-icon">📱</span><span class="sec-num">01</span><span class="sec-title">Getting Started &amp; Installation</span></div>
+    <p>The Virtual Science Lab is a <span class="highlight">Progressive Web App (PWA)</span> — it can be installed directly from your browser onto your phone or computer, without visiting any app store. Once installed, it works completely offline.</p>
+
+    <div class="step-card"><div class="step-label">Step 1 — Open in Browser</div><div class="step-desc">Open the app link in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> on your Android phone or computer. Other browsers (Firefox, Safari) may have limited PWA support.</div></div>
+    <div class="step-card"><div class="step-label">Step 2 — Install Prompt</div><div class="step-desc">After a few seconds, a banner appears at the bottom of the screen saying "Install Virtual Science Lab." Tap the <strong>"INSTALL"</strong> button. On desktop Chrome, look for the install icon in the address bar.</div></div>
+    <div class="step-card"><div class="step-label">Step 3 — Add to Home Screen</div><div class="step-desc">The app icon appears on your home screen or desktop like a native app. Tap it to open — it loads instantly with no internet required.</div></div>
+    <div class="step-card"><div class="step-label">Step 4 — Offline Use</div><div class="step-desc">All simulations, quizzes, notebooks, and content work entirely offline. Your notes and scores are saved on the device and persist between sessions.</div></div>
+
+    <div class="callout"><strong>🌐 For Teachers:</strong> Download the app on the classroom projector/laptop once with internet, then use it completely offline in class — no internet connection is needed for any subsequent use.</div>
+
+    <p>The app also supports <span class="highlight">manual installation</span> as a local folder. Save the files (index.html, manifest.json, service-worker.js, author.jpg) in one folder and open index.html in a browser, or use VS Code Live Server for local hosting.</p>
+  </div>
+
+  <!-- 02 Navigation -->
+  <div class="section-block" id="s02">
+    <div class="sec-header"><span class="sec-icon">🧭</span><span class="sec-num">02</span><span class="sec-title">Navigation &amp; Interface Overview</span></div>
+    <p>The <span class="highlight">navigation bar</span> at the top provides access to all sections of the app. On mobile, it scrolls horizontally.</p>
+    <ul>
+      <li><span class="highlight">🏠 Home</span> — Landing page with lab overview, author information, NEP 2020 alignment badges, and entry points to all labs</li>
+      <li><span class="highlight">⚡ Physics</span> — Physics simulation laboratory with 4 experiments</li>
+      <li><span class="green">🧪 Chemistry</span> — Chemistry simulation laboratory with 4 experiments</li>
+      <li><span class="orange">🔬 Biology</span> — Biology simulation laboratory with 4 experiments</li>
+      <li><span class="highlight">📓 Notebook</span> — Digital lab notebook for hypotheses, observations, conclusions, progress tracking, and achievements</li>
+      <li><span class="highlight">ℹ️ About</span> — Conceptual background, policy alignment, and problem statement</li>
+      <li><span class="highlight">📖 Manual</span> — This complete user guide</li>
+    </ul>
+
+    <p>Each lab page has an <span class="highlight">Experiment Selector</span> at the top to switch between experiments within that lab. The <strong>← Back</strong> button returns you to the Home screen.</p>
+
+    <div class="control-guide">
+      <div class="ctrl-item"><div class="ctrl-name">Control Panel</div><div class="ctrl-desc">Sliders to set experimental variables (length, voltage, temperature, etc.)</div></div>
+      <div class="ctrl-item"><div class="ctrl-name">Simulation Canvas</div><div class="ctrl-desc">Visual animation of the experiment — this is where you observe the science happening</div></div>
+      <div class="ctrl-item"><div class="ctrl-name">Concept Panel</div><div class="ctrl-desc">Explanation of the scientific principle and key formula for the selected experiment</div></div>
+      <div class="ctrl-item"><div class="ctrl-name">Observations Panel</div><div class="ctrl-desc">Live numerical readings (period, pH, magnification, etc.) that update during simulation</div></div>
+      <div class="ctrl-item"><div class="ctrl-name">Activity Log</div><div class="ctrl-desc">Scrolling terminal showing timestamped experiment actions and readings</div></div>
+      <div class="ctrl-item"><div class="ctrl-name">Quiz Section</div><div class="ctrl-desc">3 concept-based questions at the bottom of each lab to test understanding</div></div>
+    </div>
+  </div>
+
+  <!-- 03 Physics Lab -->
+  <div class="section-block" id="s03">
+    <div class="sec-header"><span class="sec-icon">⚡</span><span class="sec-num">03</span><span class="sec-title">Physics Lab – Complete Guide</span></div>
+    <p>The Physics Lab contains <span class="highlight">four experiments</span>. Select any experiment from the tabs at the top of the lab page.</p>
+
+    <p><strong style="color:var(--cyan)">🕰️ Simple Pendulum</strong></p>
+    <p>Demonstrates Simple Harmonic Motion. Formula: T = 2π√(L/g). Adjust <span class="highlight">Length (0.2–2.0m)</span>, <span class="green">Gravity (1.6–25 m/s²)</span> (try Moon gravity = 1.6!), and <span class="orange">Amplitude (5–80°)</span>. Watch the bob swing and observe how period and frequency change in real time.</p>
+
+    <p><strong style="color:var(--cyan)">📐 Inclined Plane</strong></p>
+    <p>Demonstrates Newton's Second Law. Formula: a = g·sin(θ). Use the <span class="highlight">Amplitude slider as the angle</span>. Observe the block on the incline and the calculated acceleration. Change the angle to see how steeper inclines produce greater acceleration.</p>
+
+    <p><strong style="color:var(--cyan)">🔦 Light Refraction</strong></p>
+    <p>Demonstrates Snell's Law. Formula: n₁·sin(θ₁) = n₂·sin(θ₂). Adjust the <span class="highlight">angle of incidence</span> using the Amplitude slider. Observe the incident ray (yellow) and refracted ray (green) changing direction at the air-glass boundary.</p>
+
+    <p><strong style="color:var(--cyan)">💡 Electric Circuit</strong></p>
+    <p>Demonstrates Ohm's Law: V=IR. The <span class="highlight">Length slider controls Voltage</span>, the <span class="green">Gravity slider controls Resistance</span>. Watch electrons flow through the circuit and observe how the bulb brightens as current increases. Live readings show V, R, I (current), and P (power).</p>
+
+    <div class="callout"><strong>🔬 NCF 2023 Inquiry Suggestion:</strong> For the pendulum experiment, ask students: "What happens to the period if we're on the Moon (g=1.6) vs Earth (g=9.8)? What about Jupiter (g=24.8)?" This develops comparative scientific reasoning.</div>
+  </div>
+
+  <!-- 04 Chemistry Lab -->
+  <div class="section-block" id="s04">
+    <div class="sec-header"><span class="sec-icon">🧪</span><span class="sec-num">04</span><span class="sec-title">Chemistry Lab – Complete Guide</span></div>
+    <p>The Chemistry Lab provides <span class="highlight">four safe virtual experiments</span>. No real chemicals are used — all reactions are simulated with full visual feedback.</p>
+
+    <p><strong style="color:var(--green)">🔴 Acid-Base Reaction (Neutralization)</strong></p>
+    <p>Mix HCl (acid) and NaOH (base) virtually. Adjust <span class="highlight">Acid Volume (0–100 mL)</span> and <span class="green">Base Volume (0–100 mL)</span>. Observe the <span class="highlight">pH value change</span> on the pH scale bar (0=strongly acidic, 7=neutral, 14=strongly basic), the <span class="green">indicator color shift</span> (red→green→blue), and the <span class="orange">heat released</span>. The key discovery: equal volumes of equal-concentration acid and base produce neutral pH 7.</p>
+
+    <p><strong style="color:var(--green)">⚡ Electrolysis</strong></p>
+    <p>Simulates the electrolysis of water: 2H₂O → 2H₂ + O₂. Observe bubbles forming at electrodes. Change temperature to see how it affects reaction rate.</p>
+
+    <p><strong style="color:var(--green)">🔥 Combustion</strong></p>
+    <p>CH₄ + 2O₂ → CO₂ + 2H₂O + Heat. Observe the exothermic reaction process and how temperature affects the reaction rate and product formation.</p>
+
+    <p><strong style="color:var(--green)">🧫 Titration</strong></p>
+    <p>A quantitative experiment using M₁V₁ = M₂V₂ at the equivalence point. Observe how slowly adding base to acid reaches the exact neutralization point detected by indicator color change.</p>
+
+    <div class="callout"><strong>🌡️ Temperature Effect:</strong> Use the Temperature slider across all experiments to observe how higher temperatures affect reaction rates. This is a key NCF 2023 inquiry point — "How does temperature affect chemical reactions?"</div>
+  </div>
+
+  <!-- 05 Biology Lab -->
+  <div class="section-block" id="s05">
+    <div class="sec-header"><span class="sec-icon">🔬</span><span class="sec-num">05</span><span class="sec-title">Biology Lab – Complete Guide</span></div>
+    <p>The Biology Lab simulates <span class="highlight">biological processes and structures</span> through interactive animations aligned with NCF 2023 biology curriculum.</p>
+
+    <p><strong style="color:var(--orange)">🦠 Cell Microscopy</strong></p>
+    <p>Simulates looking at plant cells under a microscope. Three sliders control the experience: <span class="highlight">Magnification (40x–2000x)</span> — at higher magnification, see more detail but fewer cells; <span class="green">Focus (0–100%)</span> — find the sweet spot around 50–65% for best clarity (simulates real focus adjustment); <span class="orange">Stain Intensity (0–100%)</span> — higher stain makes cell walls and nuclei more visible. At 400x+, chloroplasts become visible in green.</p>
+
+    <p><strong style="color:var(--orange)">🌿 Photosynthesis</strong></p>
+    <p>Visual simulation of photosynthesis: 6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂. Observe oxygen bubbles being produced by chloroplasts. Change light intensity using the Stain slider (simulating light) to see how production rate changes.</p>
+
+    <p><strong style="color:var(--orange)">💧 Osmosis</strong></p>
+    <p>Observe water molecules moving across a semi-permeable membrane. Change solute concentration using sliders and observe direction of net water movement — from low to high solute concentration.</p>
+
+    <p><strong style="color:var(--orange)">🔬 Enzyme Activity</strong></p>
+    <p>Simulate enzyme-substrate interactions. Observe how changing temperature and pH affect enzyme activity rates — showing optimal conditions and denaturation.</p>
+
+    <div class="callout"><strong>🔭 Magnification Guide:</strong> 40x–100x = Full cells visible | 200x = Cell boundaries clear | 400x = Nucleus visible | 1000x+ = Chloroplasts and fine structures. This mirrors real microscopy technique as required by NCERT practicals.</div>
+  </div>
+
+  <!-- 06 Simulations Step-by-Step -->
+  <div class="section-block" id="s06">
+    <div class="sec-header"><span class="sec-icon">🚀</span><span class="sec-num">06</span><span class="sec-title">Conducting Simulations – Step by Step</span></div>
+    <p>Every simulation follows this structure. Use this as a classroom procedure or self-study guide:</p>
+
+    <div class="step-card"><div class="step-label">Step 1 — Select Experiment</div><div class="step-desc">Go to the relevant lab (Physics, Chemistry, or Biology). Select your experiment from the tabs at the top.</div></div>
+    <div class="step-card"><div class="step-label">Step 2 — Read the Concept Panel</div><div class="step-desc">Before starting, read the yellow Concept Panel which explains the scientific principle, the relevant formula, and the NCF 2023 / NEP 2020 connection. This is your "pre-lab reading."</div></div>
+    <div class="step-card"><div class="step-label">Step 3 — Write a Hypothesis (Notebook)</div><div class="step-desc">Open the Notebook section → Hypothesis tab. Write what you predict will happen. Example: "If I increase the pendulum length, the time period will increase because L is in the numerator of √(L/g)."</div></div>
+    <div class="step-card"><div class="step-label">Step 4 — Set Initial Conditions</div><div class="step-desc">Use the Control Panel sliders to set your starting values. Keep one variable at a time constant while changing only ONE variable — this is controlled experimentation as per scientific method.</div></div>
+    <div class="step-card"><div class="step-label">Step 5 — Press START / REACT / VIEW</div><div class="step-desc">Press the green button to begin the simulation. Watch the animation and the Live Observations panel carefully.</div></div>
+    <div class="step-card"><div class="step-label">Step 6 — Change Variables and Observe</div><div class="step-desc">While the simulation runs (or after pausing), change one slider and observe how the readings change. This is the core inquiry learning activity aligned with NCF 2023.</div></div>
+    <div class="step-card"><div class="step-label">Step 7 — Record Observations (Notebook)</div><div class="step-desc">Open Notebook → Observations. Write down the readings for at least 3-4 different variable settings. Example: "L=0.5m, T=1.42s | L=1.0m, T=2.01s | L=2.0m, T=2.84s"</div></div>
+    <div class="step-card"><div class="step-label">Step 8 — Use PAUSE &amp; RESET</div><div class="step-desc">Press ⏸ PAUSE to freeze the simulation and read values carefully. Press ↺ RESET to start fresh with new variable settings.</div></div>
+    <div class="step-card"><div class="step-label">Step 9 — Write Conclusion (Notebook)</div><div class="step-desc">Open Notebook → Conclusion. Compare your observations with your hypothesis. Explain whether the hypothesis was confirmed or rejected and why.</div></div>
+    <div class="step-card"><div class="step-label">Step 10 — Take the Quiz</div><div class="step-desc">Scroll to the quiz at the bottom of the lab page. Answer the 3 questions to test your conceptual understanding. Review wrong answers to reinforce learning.</div></div>
+  </div>
+
+  <!-- 07 Notebook -->
+  <div class="section-block" id="s07">
+    <div class="sec-header"><span class="sec-icon">📓</span><span class="sec-num">07</span><span class="sec-title">Lab Notebook – How to Use</span></div>
+    <p>The Digital Lab Notebook is aligned with <span class="highlight">NEP 2020's emphasis on scientific documentation</span> and the NCERT requirement for maintaining lab records. It has three tabs:</p>
+    <ul>
+      <li><span class="highlight">💡 Hypothesis Tab</span> — Write your prediction BEFORE conducting the experiment. A good hypothesis follows the format: "If [variable] is changed, then [outcome] will happen because [scientific reasoning]."</li>
+      <li><span class="green">👁️ Observations Tab</span> — Record numerical readings and qualitative observations DURING the experiment. Be specific — include variable values and corresponding readings.</li>
+      <li><span class="orange">✅ Conclusion Tab</span> — Write your analysis AFTER the experiment. Compare observations to the hypothesis. State whether results confirm or contradict the prediction and why.</li>
+    </ul>
+    <p>Press <span class="green">💾 SAVE</span> after writing in each tab. Entries are saved to the device using LocalStorage and <span class="highlight">persist between sessions</span> — your notes are never lost.</p>
+    <p>The Notebook section also shows your <span class="highlight">Progress Bars</span> for each lab and your earned <span class="yellow">Achievement Badges</span>.</p>
+    <div class="callout"><strong>📋 For Teachers:</strong> Ask students to type their entries in the notebook and screenshot them as their digital lab report submission. This directly fulfills the PARAKH competency-based assessment model.</div>
+  </div>
+
+  <!-- 08 Quizzes -->
+  <div class="section-block" id="s08">
+    <div class="sec-header"><span class="sec-icon">📝</span><span class="sec-num">08</span><span class="sec-title">Quizzes &amp; Assessment</span></div>
+    <p>Each lab has a <span class="highlight">3-question quiz</span> at the bottom of the page. These are aligned with <span class="green">PARAKH's competency-based assessment</span> model — questions test conceptual understanding, not rote memorization.</p>
+    <ul>
+      <li>Read each question carefully — they are conceptual, not definitional</li>
+      <li>Select an answer option — you'll receive <span class="green">green feedback for correct</span>, <span class="orange">red for incorrect</span></li>
+      <li>The correct answer is always highlighted even if wrong, so you learn from mistakes</li>
+      <li>Your <span class="highlight">score is saved</span> on the device and tracked in the Notebook section</li>
+      <li>Press <span class="highlight">↺ RETRY</span> after completing all questions to attempt again</li>
+    </ul>
+    <div class="callout"><strong>💡 Teaching Strategy:</strong> Have students conduct the experiment FIRST, then take the quiz. Scores are typically higher after hands-on virtual experimentation — demonstrating the NEP 2020 principle that experiential learning improves conceptual understanding.</div>
+  </div>
+
+  <!-- 09 Badges -->
+  <div class="section-block" id="s09">
+    <div class="sec-header"><span class="sec-icon">🏆</span><span class="sec-num">09</span><span class="sec-title">Achievements &amp; Badges</span></div>
+    <p>The gamification system awards <span class="yellow">digital badges</span> to motivate continued learning and exploration — aligned with NEP 2020's emphasis on holistic, positive learning experiences.</p>
+    <div class="badge-guide">
+      <div class="badge-item"><span class="badge-icon">🏆</span><div class="badge-name">Young Scientist</div><div class="badge-how">Perfect quiz score</div></div>
+      <div class="badge-item"><span class="badge-icon">📝</span><div class="badge-name">Lab Recorder</div><div class="badge-how">Save notebook entry</div></div>
+      <div class="badge-item"><span class="badge-icon">🔭</span><div class="badge-name">Science Explorer</div><div class="badge-how">Use all 3 labs</div></div>
+      <div class="badge-item"><span class="badge-icon">⭐</span><div class="badge-name">Experiment Master</div><div class="badge-how">Complete all quizzes</div></div>
+    </div>
+    <p>View all earned badges in the <span class="highlight">📓 Notebook → Achievements section</span>. Badges are saved permanently on your device.</p>
+  </div>
+
+  <!-- 10 Teacher Guide -->
+  <div class="section-block" id="s10">
+    <div class="sec-header"><span class="sec-icon">👨‍🏫</span><span class="sec-num">10</span><span class="sec-title">Teacher's Guide</span></div>
+    <p>This app is designed as a <span class="highlight">classroom teaching tool</span> aligned with NEP 2020 and NCF 2023 pedagogical frameworks. Here's how to integrate it effectively:</p>
+    <ul>
+      <li><span class="highlight">Pre-class (Flipped Learning, NEP 2020)</span> — Assign students to explore a specific experiment at home and write a hypothesis in the notebook before the class discussion</li>
+      <li><span class="green">In-class Demonstration</span> — Project the app on screen and demonstrate experiments while asking students to predict outcomes before revealing results (inquiry-based, NCF 2023)</li>
+      <li><span class="highlight">Controlled Variable Activity</span> — Ask each student group to keep all variables constant and change only ONE slider. Compare results across groups to teach controlled experimentation</li>
+      <li><span class="green">Lab Report Assignment (PARAKH)</span> — Require students to complete all three notebook tabs (hypothesis, observations, conclusion) and submit screenshots as their digital lab report</li>
+      <li><span class="orange">Cross-Lab Inquiry</span> — Ask questions like "How is the concept of variables in the pendulum experiment similar to how we change acid volume in chemistry?" (connecting labs, NCF 2023 cross-disciplinary thinking)</li>
+      <li><span class="highlight">Quiz Assessment</span> — Use quiz scores as formative assessment. Students who score 2/3 or below should redo the experiment with guidance before retaking the quiz</li>
+    </ul>
+    <div class="callout"><strong>📱 No-Internet Classroom:</strong> The app works fully offline. Install it once on the school computer or projector and use it in classes indefinitely — no internet required. Students can also install it on personal phones for home study.</div>
+  </div>
+
+  <!-- 11 Scientific Method -->
+  <div class="section-block" id="s11">
+    <div class="sec-header"><span class="sec-icon">🔬</span><span class="sec-num">11</span><span class="sec-title">Scientific Method Guide</span></div>
+    <p>All simulations are designed around the <span class="highlight">Scientific Method</span> as prescribed by NCERT and emphasized in NEP 2020 and NCF 2023:</p>
+    <div class="method-timeline">
+      <div class="method-step"><div class="method-dot">1</div><div class="method-content"><div class="method-title">OBSERVE</div><div class="method-desc">Read the Concept Panel. Understand the phenomenon. Look at the initial simulation state before pressing START.</div></div></div>
+      <div class="method-step"><div class="method-dot">2</div><div class="method-content"><div class="method-title">QUESTION</div><div class="method-desc">What will happen if I change variable X? What is the relationship between variable A and outcome B?</div></div></div>
+      <div class="method-step"><div class="method-dot">3</div><div class="method-content"><div class="method-title">HYPOTHESIZE</div><div class="method-desc">Write a testable prediction in the Notebook → Hypothesis tab. Use "If...then...because..." format.</div></div></div>
+      <div class="method-step"><div class="method-dot">4</div><div class="method-content"><div class="method-title">EXPERIMENT</div><div class="method-desc">Run the simulation. Change ONE variable at a time. Press START, adjust sliders, observe the animation and live readings.</div></div></div>
+      <div class="method-step"><div class="method-dot">5</div><div class="method-content"><div class="method-title">RECORD DATA</div><div class="method-desc">Write numerical observations in Notebook → Observations. Record at least 3 data points for each variable change.</div></div></div>
+      <div class="method-step"><div class="method-dot">6</div><div class="method-content"><div class="method-title">ANALYZE</div><div class="method-desc">Look for patterns in your data. Does increasing X always increase Y? Is there a formula that fits your data?</div></div></div>
+      <div class="method-step"><div class="method-dot">7</div><div class="method-content"><div class="method-title">CONCLUDE</div><div class="method-desc">Write conclusions in Notebook → Conclusion. Was your hypothesis correct? What does the data show? What would you investigate next?</div></div></div>
+    </div>
+  </div>
+
+  <!-- 12 NEP Integration -->
+  <div class="section-block" id="s12">
+    <div class="sec-header"><span class="sec-icon">📋</span><span class="sec-num">12</span><span class="sec-title">NEP 2020 &amp; NCF 2023 Integration Map</span></div>
+    <p>Every feature of this app maps directly to a specific NEP 2020 or NCF 2023 goal:</p>
+    <div class="nep-box">
+      <div class="nep-box-title">NEP 2020 ALIGNMENT</div>
+      <div class="nep-row"><span class="nep-icon">🔬</span><span class="nep-text"><strong>Experiential Learning</strong> — Simulations provide genuine hands-on learning experience as mandated by NEP 2020 Section 4.6</span></div>
+      <div class="nep-row"><span class="nep-icon">💻</span><span class="nep-text"><strong>Technology Integration</strong> — PWA brings digital science education to low-infrastructure schools as envisioned by NEP 2020</span></div>
+      <div class="nep-row"><span class="nep-icon">🧠</span><span class="nep-text"><strong>Scientific Temper</strong> — Hypothesis-testing approach builds the scientific mindset promoted in NEP 2020</span></div>
+      <div class="nep-row"><span class="nep-icon">📓</span><span class="nep-text"><strong>Documentation Skills</strong> — Lab Notebook builds scientific writing competency as per NEP 2020's holistic skill development goal</span></div>
+    </div>
+    <div class="nep-box" style="background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,212,255,.06));border-color:rgba(0,255,136,.2)">
+      <div class="nep-box-title" style="color:var(--green)">NCF 2023 ALIGNMENT</div>
+      <div class="nep-row"><span class="nep-icon">🔍</span><span class="nep-text"><strong>Inquiry-Based Learning</strong> — Variable manipulation drives the inquiry cycle prescribed in NCF 2023 science curriculum</span></div>
+      <div class="nep-row"><span class="nep-icon">🎯</span><span class="nep-text"><strong>Conceptual Understanding</strong> — Concept panels and visual simulations build deep understanding over rote recall</span></div>
+      <div class="nep-row"><span class="nep-icon">📊</span><span class="nep-text"><strong>Data Literacy</strong> — Live readings and observation recording develop data interpretation skills (NCF 2023 competency)</span></div>
+      <div class="nep-row"><span class="nep-icon">✅</span><span class="nep-text"><strong>PARAKH Assessment</strong> — Conceptual quizzes align with PARAKH's competency-based evaluation framework, testing reasoning not memorization</span></div>
+    </div>
+  </div>
+
+  <div class="footer-author">
+    <img src="author.jpg" alt="Mateen Yousuf"/>
+    <div class="footer-info">
+      <strong>Mateen Yousuf</strong><br/>
+      Teacher – School Education Department, J&amp;K<br/>
+      Concept Developer | Virtual Science Lab | NEP 2020 &amp; NCF 2023 Aligned
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

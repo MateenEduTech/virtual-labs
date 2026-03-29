@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0a2e">
+<meta name="description" content="Language Gap Bridging App - Bridge your home language to school language. Offline PWA by Mateen Yousuf.">
+<title>LinguaBridge – Language Gap App</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Nastaliq+Urdu&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  /* ===== CSS VARIABLES ===== */
+  :root {
+    --bg: #0d0820;
+    --bg2: #13102b;
+    --bg3: #1c1740;
+    --card: #1e1a3a;
+    --card2: #252048;
+    --accent: #f5a623;
+    --accent2: #e05aff;
+    --green: #00e5a0;
+    --blue: #4fc3f7;
+    --red: #ff6b6b;
+    --text: #f0eaff;
+    --muted: #9a94b8;
+    --border: rgba(245,166,35,0.2);
+    --radius: 18px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    --font-main: 'Baloo 2', cursive;
+    --font-body: 'Poppins', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SPLASH SCREEN ===== */
+  #splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #0d0820 0%, #1a0a2e 50%, #0d2040 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+    transition: opacity 0.8s ease;
+  }
+  #splash.hide { opacity: 0; pointer-events: none; }
+
+  .splash-logo {
+    width: 100px; height: 100px;
+    position: relative;
+  }
+  .splash-logo svg { width: 100%; height: 100%; }
+
+  .splash-title {
+    font-family: var(--font-main);
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+  .splash-sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .splash-bar {
+    width: 200px; height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .splash-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    animation: loadBar 2s ease forwards;
+  }
+  @keyframes loadBar { from { width: 0; } to { width: 100%; } }
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,8,32,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--font-main);
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .mode-toggle {
+    display: flex;
+    background: var(--card);
+    border-radius: 30px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .mode-btn {
+    padding: 6px 14px;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    transition: all 0.3s;
+  }
+  .mode-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(19,16,43,0.97);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 16px;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    cursor: pointer;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .nav-item .nav-icon { font-size: 1.4rem; transition: transform 0.3s; }
+  .nav-item.active { color: var(--accent); }
+  .nav-item.active .nav-icon { transform: translateY(-4px); }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    padding: 20px 16px 100px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; animation: fadeIn 0.4s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .card-title {
+    font-family: var(--font-main);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ===== HOME PAGE ===== */
+  .welcome-hero {
+    background: linear-gradient(135deg, #1c0a3a, #0a1a3a);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid rgba(245,166,35,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-hero::after {
+    content: '🌐';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.04;
+    right: -20px; bottom: -20px;
+  }
+  .welcome-hero h1 {
+    font-family: var(--font-main);
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .welcome-hero p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+  /* Language selector */
+  .lang-selector {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .lang-box {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .lang-box:hover { border-color: var(--accent); }
+  .lang-box.selected { border-color: var(--accent); background: rgba(245,166,35,0.1); }
+  .lang-box .lang-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 4px; }
+  .lang-box .lang-name { font-family: var(--font-main); font-size: 1rem; font-weight: 700; }
+  .lang-arrow { font-size: 1.4rem; color: var(--accent); text-align: center; }
+
+  /* Module grid */
+  .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .module-card {
+    background: var(--card2);
+    border-radius: 14px;
+    padding: 18px 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .module-card .mod-icon { font-size: 2rem; margin-bottom: 8px; }
+  .module-card .mod-name { font-family: var(--font-main); font-size: 0.9rem; font-weight: 700; }
+  .module-card .mod-desc { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+  .module-card .mod-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--green); color: var(--bg);
+    font-size: 0.6rem; font-weight: 700;
+    padding: 2px 6px; border-radius: 10px;
+  }
+
+  /* Progress overview */
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .progress-label { font-size: 0.8rem; color: var(--muted); width: 80px; flex-shrink: 0; }
+  .progress-bar-wrap { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .progress-pct { font-size: 0.8rem; font-weight: 600; width: 36px; text-align: right; }
+
+  /* ===== VOCABULARY PAGE ===== */
+  .search-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  .search-bar input {
+    flex: 1; border: none; background: transparent;
+    color: var(--text); font-family: var(--font-body);
+    font-size: 0.95rem; outline: none;
+  }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .vocab-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    display: flex; gap: 14px; align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .vocab-card:hover { border-color: var(--accent); transform: translateX(4px); }
+  .vocab-word-home {
+    font-family: var(--font-main);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .vocab-word-school {
+    font-family: var(--font-main);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-top: 2px;
+  }
+  .vocab-context { font-size: 0.75rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .vocab-audio-btn {
+    background: rgba(79,195,247,0.15);
+    border: 1px solid rgba(79,195,247,0.3);
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 1rem;
+    transition: all 0.3s;
+    margin-top: 2px;
+  }
+  .vocab-audio-btn:hover { background: rgba(79,195,247,0.3); transform: scale(1.1); }
+
+  /* Category pills */
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--muted);
+    background: var(--card);
+  }
+  .pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* ===== AUDIO PAGE ===== */
+  .audio-player-card {
+    background: linear-gradient(135deg, #1c0a3a, #0a1a3a);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-align: center;
+    border: 1px solid rgba(245,166,35,0.3);
+    margin-bottom: 16px;
+  }
+  .audio-topic { font-family: var(--font-main); font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+  .audio-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 20px; }
+  .audio-wave {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; height: 50px; margin-bottom: 20px;
+  }
+  .audio-wave span {
+    display: block; width: 5px;
+    background: linear-gradient(to top, var(--accent), var(--accent2));
+    border-radius: 3px;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .audio-wave span:nth-child(1) { height: 20px; animation-delay: 0s; }
+  .audio-wave span:nth-child(2) { height: 35px; animation-delay: 0.1s; }
+  .audio-wave span:nth-child(3) { height: 48px; animation-delay: 0.2s; }
+  .audio-wave span:nth-child(4) { height: 35px; animation-delay: 0.3s; }
+  .audio-wave span:nth-child(5) { height: 22px; animation-delay: 0.4s; }
+  .audio-wave span:nth-child(6) { height: 38px; animation-delay: 0.5s; }
+  .audio-wave span:nth-child(7) { height: 28px; animation-delay: 0.3s; }
+  .audio-wave.paused span { animation-play-state: paused; }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.4); }
+  }
+
+  .audio-controls { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .audio-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--card2);
+    color: var(--text);
+    transition: all 0.3s;
+  }
+  .audio-btn.primary {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+    font-size: 1.4rem;
+  }
+  .audio-btn:hover { transform: scale(1.1); }
+
+  .lang-switch-row {
+    display: flex; gap: 10px; margin-top: 16px;
+  }
+  .lang-switch-btn {
+    flex: 1; padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .lang-switch-btn.active { background: rgba(245,166,35,0.15); border-color: var(--accent); color: var(--accent); }
+
+  .lesson-list { margin-top: 8px; }
+  .lesson-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px;
+    background: var(--card);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  .lesson-item:hover, .lesson-item.active { border-color: var(--accent); }
+  .lesson-item.active .lesson-title { color: var(--accent); }
+  .lesson-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lesson-info { flex: 1; }
+  .lesson-title { font-size: 0.9rem; font-weight: 600; }
+  .lesson-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .lesson-done { color: var(--green); font-size: 1rem; }
+
+  /* ===== SENTENCE BUILDER PAGE ===== */
+  .sentence-display {
+    background: var(--bg3);
+    border-radius: 14px;
+    padding: 20px;
+    min-height: 80px;
+    margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-content: flex-start;
+    border: 2px dashed var(--border);
+    transition: border-color 0.3s;
+  }
+  .sentence-display.has-words { border-style: solid; border-color: var(--accent); }
+
+  .word-chip {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: popIn 0.2s ease;
+  }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+  .word-chip:hover { transform: scale(0.95); opacity: 0.8; }
+
+  .word-bank { margin-bottom: 16px; }
+  .word-bank-title { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .word-bank-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .bank-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .bank-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .bank-chip.used { opacity: 0.3; pointer-events: none; }
+
+  .sentence-actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex: 1;
+    text-align: center;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--bg); }
+  .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .btn:active { transform: translateY(0); }
+
+  .sentence-feedback {
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .sentence-feedback.correct { background: rgba(0,229,160,0.15); border: 1px solid var(--green); color: var(--green); }
+  .sentence-feedback.wrong { background: rgba(255,107,107,0.15); border: 1px solid var(--red); color: var(--red); }
+
+  /* ===== TRACKER PAGE ===== */
+  .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .skill-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .skill-icon { font-size: 2rem; margin-bottom: 8px; }
+  .skill-name { font-family: var(--font-main); font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+  .skill-ring-wrap { position: relative; width: 70px; height: 70px; margin: 0 auto 8px; }
+  .skill-ring { transform: rotate(-90deg); }
+  .skill-ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+  .skill-ring .bg { stroke: var(--bg3); }
+  .skill-ring .fill { stroke: var(--accent); transition: stroke-dashoffset 1.5s ease; }
+  .skill-pct {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-main);
+    font-size: 1rem; font-weight: 800;
+  }
+  .skill-level { font-size: 0.72rem; color: var(--muted); }
+
+  .parakh-levels { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+  .parakh-level {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  .parakh-level.reached { border-color: var(--green); background: rgba(0,229,160,0.08); }
+  .parakh-level.current { border-color: var(--accent); background: rgba(245,166,35,0.1); }
+  .parakh-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 6px; background: var(--bg3); }
+  .parakh-level.reached .parakh-dot { background: var(--green); }
+  .parakh-level.current .parakh-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .parakh-name { font-size: 0.7rem; font-weight: 600; }
+
+  /* ===== PROFILE PAGE ===== */
+  .profile-hero {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .author-photo-wrap {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    border: 3px solid var(--accent);
+    overflow: hidden;
+    box-shadow: 0 0 0 6px rgba(245,166,35,0.15);
+    cursor: pointer;
+    position: relative;
+  }
+  .author-photo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+  }
+  .author-photo-wrap .upload-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 1.4rem;
+  }
+  .author-photo-wrap:hover .upload-overlay { opacity: 1; }
+
+  .author-name { font-family: var(--font-main); font-size: 1.4rem; font-weight: 800; }
+  .author-title { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-val { font-family: var(--font-main); font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
+
+  .bookmark-list { }
+  .bookmark-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--card);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  .bookmark-item:hover { border-color: var(--accent); }
+
+  .notes-area {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 14px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    margin-bottom: 10px;
+  }
+  .notes-area:focus { border-color: var(--accent); }
+
+  /* ===== OFFLINE BADGE ===== */
+  .offline-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.3);
+    color: var(--green);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .offline-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (min-width: 480px) {
+    main { padding: 24px 24px 100px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-logo">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#f5a623" stroke-width="3" opacity="0.3"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#e05aff" stroke-width="3" opacity="0.3"/>
+      <text x="50" y="60" text-anchor="middle" font-size="36" fill="#f5a623">🌐</text>
+    </svg>
+  </div>
+  <div class="splash-title">LinguaBridge</div>
+  <div class="splash-sub">Bridging Languages, Building Futures</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  <div class="offline-badge"><span class="offline-dot"></span> Offline Ready</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <path d="M8 16 Q16 8 24 16 Q16 24 8 16" fill="none" stroke="#e05aff" stroke-width="1.5"/>
+      <circle cx="16" cy="16" r="3" fill="#f5a623"/>
+    </svg>
+    LinguaBridge
+  </div>
+  <div class="header-right">
+    <div class="offline-badge"><span class="offline-dot"></span> Offline</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" onclick="setMode('student')">Student</button>
+      <button class="mode-btn" onclick="setMode('teacher')">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="welcome-hero">
+      <h1>नमस्ते! ہیلو! Hello!</h1>
+      <p>Bridge your home language to school language with audio, vocabulary & more. Works fully offline! 📚</p>
+      <br>
+      <div class="offline-badge" style="display:inline-flex;"><span class="offline-dot"></span> NEP 2020 • NCF 2023 Aligned</div>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="card">
+      <div class="card-title">🗣️ Select Your Languages</div>
+      <div class="lang-selector">
+        <div class="lang-box selected" onclick="selectLang('home', this)">
+          <div class="lang-label">Home Language</div>
+          <div class="lang-name" id="homeLang">Kashmiri 🏔️</div>
+        </div>
+        <div class="lang-arrow">→</div>
+        <div class="lang-box" onclick="selectLang('school', this)">
+          <div class="lang-label">School Language</div>
+          <div class="lang-name" id="schoolLang">English 📖</div>
+        </div>
+      </div>
+      <div class="pill-row" id="langPills">
+        <div class="pill active" onclick="changeLang('home','Kashmiri 🏔️',this)">Kashmiri</div>
+        <div class="pill" onclick="changeLang('home','Urdu 📜',this)">Urdu</div>
+        <div class="pill" onclick="changeLang('home','Hindi 🪔',this)">Hindi</div>
+        <div class="pill" onclick="changeLang('home','Dogri 🌄',this)">Dogri</div>
+      </div>
+    </div>
+
+    <!-- Modules -->
+    <div class="card">
+      <div class="card-title">📚 Learning Modules</div>
+      <div class="module-grid">
+        <div class="module-card" onclick="goPage('vocab')">
+          <div class="mod-badge">NEW</div>
+          <div class="mod-icon">📖</div>
+          <div class="mod-name">Vocabulary Bridge</div>
+          <div class="mod-desc">Word mapping tool</div>
+        </div>
+        <div class="module-card" onclick="goPage('audio')">
+          <div class="mod-icon">🎧</div>
+          <div class="mod-name">Audio Lessons</div>
+          <div class="mod-desc">Listen & learn</div>
+        </div>
+        <div class="module-card" onclick="goPage('builder')">
+          <div class="mod-icon">🧩</div>
+          <div class="mod-name">Sentence Builder</div>
+          <div class="mod-desc">Build sentences</div>
+        </div>
+        <div class="module-card" onclick="goPage('tracker')">
+          <div class="mod-icon">📊</div>
+          <div class="mod-name">Competency Tracker</div>
+          <div class="mod-desc">Track progress</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="card">
+      <div class="card-title">📈 My Progress</div>
+      <div class="progress-row">
+        <div class="progress-label">👂 Listening</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:72%;background:linear-gradient(90deg,#4fc3f7,#e05aff)"></div></div>
+        <div class="progress-pct" style="color:#4fc3f7">72%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">🗣️ Speaking</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:55%;background:linear-gradient(90deg,#f5a623,#ff6b6b)"></div></div>
+        <div class="progress-pct" style="color:#f5a623">55%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">📖 Reading</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:68%;background:linear-gradient(90deg,#00e5a0,#4fc3f7)"></div></div>
+        <div class="progress-pct" style="color:#00e5a0">68%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">✍️ Writing</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:40%;background:linear-gradient(90deg,#e05aff,#f5a623)"></div></div>
+        <div class="progress-pct" style="color:#e05aff">40%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOCABULARY PAGE -->
+  <div class="page" id="page-vocab">
+    <div class="card">
+      <div class="card-title">📖 Vocabulary Bridge Builder</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">Map words from your home language to school language</p>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="vocabSearch" placeholder="Search words..." oninput="filterVocab()">
+      </div>
+    </div>
+
+    <div class="pill-row">
+      <div class="pill active" onclick="filterCategory('all',this)">All</div>
+      <div class="pill" onclick="filterCategory('science',this)">Science</div>
+      <div class="pill" onclick="filterCategory('math',this)">Math</div>
+      <div class="pill" onclick="filterCategory('daily',this)">Daily Life</div>
+      <div class="pill" onclick="filterCategory('nature',this)">Nature</div>
+    </div>
+
+    <div id="vocabList">
+      <!-- Vocab cards injected here -->
+    </div>
+  </div>
+
+  <!-- AUDIO PAGE -->
+  <div class="page" id="page-audio">
+    <div class="audio-player-card">
+      <div class="audio-topic" id="audioTopic">Introduction to Plants</div>
+      <div class="audio-sub" id="audioSub">Lesson 1 of 8 • Science</div>
+      <div class="audio-wave" id="audioWave">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <div class="audio-controls">
+        <button class="audio-btn" onclick="prevLesson()">⏮</button>
+        <button class="audio-btn primary" id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="audio-btn" onclick="nextLesson()">⏭</button>
+      </div>
+      <div class="lang-switch-row">
+        <button class="lang-switch-btn active" id="btnHome" onclick="switchAudioLang('home')">
+          🏔️ Home Language
+        </button>
+        <button class="lang-switch-btn" id="btnSchool" onclick="switchAudioLang('school')">
+          📖 School Language
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📚 All Lessons</div>
+      <div class="lesson-list" id="lessonList"></div>
+    </div>
+  </div>
+
+  <!-- SENTENCE BUILDER PAGE -->
+  <div class="page" id="page-builder">
+    <div class="card">
+      <div class="card-title">🧩 Sentence Builder</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;" id="sentencePrompt">Build the sentence: "The water flows down the mountain."</p>
+      <div class="sentence-display" id="sentenceDisplay">
+        <span style="color:var(--muted);font-size:0.85rem;">Tap words below to build your sentence...</span>
+      </div>
+      <div id="sentenceFeedback" class="sentence-feedback"></div>
+    </div>
+
+    <div class="word-bank">
+      <div class="word-bank-title">🃏 Word Bank — Tap to add</div>
+      <div class="word-bank-chips" id="wordBank"></div>
+    </div>
+
+    <div class="sentence-actions">
+      <button class="btn btn-secondary" onclick="clearSentence()">🗑 Clear</button>
+      <button class="btn btn-primary" onclick="checkSentence()">✓ Check</button>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">🎯 Practice Sets</div>
+      <div id="practiceSets"></div>
+    </div>
+  </div>
+
+  <!-- TRACKER PAGE -->
+  <div class="page" id="page-tracker">
+    <div class="card">
+      <div class="card-title">📊 Language Competency Tracker</div>
+      <div class="skill-grid" id="skillGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏅 PARAKH Level</div>
+      <div class="parakh-levels" id="parakhLevels"></div>
+      <p style="font-size:0.8rem;color:var(--muted);">You are currently at <strong style="color:var(--accent)">Developing</strong> level. Keep going! 🚀</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Learning Streak</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="streakGrid"></div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:10px;">🔥 Current streak: <strong style="color:var(--accent)">7 days</strong></p>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="profile-hero">
+      <div class="author-photo-wrap" onclick="document.getElementById('photoInput').click()">
+        <img id="authorPhoto" src="author.jpg" alt="Mateen Yousuf" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect fill=\'%231e1a3a\' width=\'100\' height=\'100\'/><text y=\'60\' x=\'50\' text-anchor=\'middle\' font-size=\'40\'>👤</text></svg>'">
+        <div class="upload-overlay">📷</div>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto(event)">
+      <div class="author-name">Mateen Yousuf</div>
+      <div class="author-title">Teacher – School Education Department, J&K</div>
+      <br>
+      <div class="offline-badge"><span class="offline-dot"></span> NEP 2020 Champion</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="statWords">47</div><div class="stat-label">Words Learned</div></div>
+      <div class="stat-card"><div class="stat-val" id="statLessons">12</div><div class="stat-label">Lessons Done</div></div>
+      <div class="stat-card"><div class="stat-val" id="statDays">7</div><div class="stat-label">Day Streak</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔖 My Bookmarks</div>
+      <div id="bookmarkList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 My Notes</div>
+      <textarea class="notes-area" id="studentNotes" placeholder="Write your learning notes here..." oninput="saveNotes()"></textarea>
+      <button class="btn btn-primary" onclick="saveNotes(); showToast('Notes saved! ✅')">💾 Save Notes</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="goPage('home')">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-item" onclick="goPage('vocab')">
+    <span class="nav-icon">📖</span>Vocab
+  </button>
+  <button class="nav-item" onclick="goPage('audio')">
+    <span class="nav-icon">🎧</span>Audio
+  </button>
+  <button class="nav-item" onclick="goPage('builder')">
+    <span class="nav-icon">🧩</span>Builder
+  </button>
+  <button class="nav-item" onclick="goPage('tracker')">
+    <span class="nav-icon">📊</span>Track
+  </button>
+  <button class="nav-item" onclick="goPage('profile')">
+    <span class="nav-icon">👤</span>Profile
+  </button>
+</nav>
+
+<script>
+// ===== DATA =====
+const vocabData = [
+  { home: 'Naer', homeScript: 'نار', school: 'Fire', context: 'The fire burns brightly in winter.', category: 'nature', emoji: '🔥' },
+  { home: 'Paani / پانی', homeScript: 'پانی', school: 'Water', context: 'Drink water to stay healthy.', category: 'science', emoji: '💧' },
+  { home: 'Vann', homeScript: 'وَن', school: 'Forest', context: 'The forest has many trees.', category: 'nature', emoji: '🌲' },
+  { home: 'Kotah / کوٹھ', homeScript: 'کوٹھ', school: 'House', context: 'We live in a house.', category: 'daily', emoji: '🏠' },
+  { home: 'Hisab / حساب', homeScript: 'حساب', school: 'Mathematics', context: 'Solve the mathematics problem.', category: 'math', emoji: '🔢' },
+  { home: 'Azmaish / آزمائش', homeScript: 'آزمائش', school: 'Experiment', context: 'Do the science experiment carefully.', category: 'science', emoji: '🔬' },
+  { home: 'Darya / دریا', homeScript: 'دریا', school: 'River', context: 'The river flows to the sea.', category: 'nature', emoji: '🌊' },
+  { home: 'Gintee / گِنتی', homeScript: 'گِنتی', school: 'Counting', context: 'Practice counting numbers.', category: 'math', emoji: '🔢' },
+  { home: 'Roz / روز', homeScript: 'روز', school: 'Daily', context: 'Follow your daily routine.', category: 'daily', emoji: '📅' },
+  { home: 'Hawa / ہَوا', homeScript: 'ہَوا', school: 'Air', context: 'Air is essential for life.', category: 'science', emoji: '💨' },
+];
+
+const lessons = [
+  { title: 'Introduction to Plants', meta: 'Science • 5 min', done: true },
+  { title: 'Water Cycle Explained', meta: 'Science • 7 min', done: true },
+  { title: 'Animals & Habitats', meta: 'Science • 6 min', done: false },
+  { title: 'Numbers 1–100', meta: 'Math • 8 min', done: false },
+  { title: 'Our Body Parts', meta: 'Science • 5 min', done: false },
+  { title: 'Seasons & Weather', meta: 'Nature • 6 min', done: false },
+  { title: 'Family & Relations', meta: 'Daily Life • 4 min', done: false },
+  { title: 'Colors & Shapes', meta: 'Math • 5 min', done: false },
+];
+
+const practiceSets = [
+  { prompt: 'Build: "The water flows down the mountain."', words: ['The', 'water', 'flows', 'down', 'the', 'mountain', 'sun', 'runs'], answer: ['The', 'water', 'flows', 'down', 'the', 'mountain'] },
+  { prompt: 'Build: "Plants need sunlight to grow."', words: ['Plants', 'need', 'sunlight', 'to', 'grow', 'water', 'rain'], answer: ['Plants', 'need', 'sunlight', 'to', 'grow'] },
+  { prompt: 'Build: "I go to school every day."', words: ['I', 'go', 'to', 'school', 'every', 'day', 'home', 'play'], answer: ['I', 'go', 'to', 'school', 'every', 'day'] },
+];
+
+const skills = [
+  { name: 'Listening', icon: '👂', pct: 72, color: '#4fc3f7' },
+  { name: 'Speaking', icon: '🗣️', pct: 55, color: '#f5a623' },
+  { name: 'Reading', icon: '📖', pct: 68, color: '#00e5a0' },
+  { name: 'Writing', icon: '✍️', pct: 40, color: '#e05aff' },
+];
+
+const parakhLevels = ['Emerging', 'Developing', 'Proficient', 'Advanced'];
+
+// ===== APP STATE =====
+let currentPage = 'home';
+let currentMode = 'student';
+let isPlaying = false;
+let currentLesson = 0;
+let currentAudioLang = 'home';
+let currentPractice = 0;
+let selectedWords = [];
+let currentCategory = 'all';
+
+// ===== INIT =====
+window.onload = function() {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => document.getElementById('splash').remove(), 800);
+  }, 2500);
+  loadFromStorage();
+  renderVocab(vocabData);
+  renderLessons();
+  renderSkills();
+  renderParakh();
+  renderStreak();
+  renderPracticeSets();
+  renderBookmarks();
+};
+
+// ===== NAVIGATION =====
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navBtns = document.querySelectorAll('.nav-item');
+  const map = { home:0, vocab:1, audio:2, builder:3, tracker:4, profile:5 };
+  if (map[page] !== undefined) navBtns[map[page]].classList.add('active');
+  currentPage = page;
+}
+
+// ===== MODE TOGGLE =====
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  showToast(mode === 'student' ? '👨‍🎓 Student Mode' : '👩‍🏫 Teacher Mode');
+}
+
+// ===== LANGUAGE SELECTION =====
+function selectLang(type, el) {
+  document.querySelectorAll('.lang-box').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function changeLang(type, name, el) {
+  document.getElementById('homeLang').textContent = name;
+  document.querySelectorAll('#langPills .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Language changed to ' + name.split(' ')[0]);
+}
+
+// ===== VOCABULARY =====
+function renderVocab(data) {
+  const list = document.getElementById('vocabList');
+  list.innerHTML = data.map((v,i) => `
+    <div class="vocab-card" onclick="bookmarkVocab('${v.school}')">
+      <div style="flex:1">
+        <div class="vocab-word-home">${v.emoji} ${v.home}</div>
+        <div class="vocab-word-school">→ ${v.school}</div>
+        <div class="vocab-context">${v.context}</div>
+      </div>
+      <button class="vocab-audio-btn" onclick="event.stopPropagation(); speakWord('${v.school}')">🔊</button>
+    </div>
+  `).join('');
+}
+
+function filterVocab() {
+  const q = document.getElementById('vocabSearch').value.toLowerCase();
+  const filtered = vocabData.filter(v =>
+    (currentCategory === 'all' || v.category === currentCategory) &&
+    (v.home.toLowerCase().includes(q) || v.school.toLowerCase().includes(q))
+  );
+  renderVocab(filtered);
+}
+
+function filterCategory(cat, el) {
+  currentCategory = cat;
+  document.querySelectorAll('.pill-row .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  filterVocab();
+}
+
+function speakWord(word) {
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = 'en-US'; u.rate = 0.8;
+    speechSynthesis.speak(u);
+  }
+  showToast('🔊 ' + word);
+}
+
+function bookmarkVocab(word) {
+  const bookmarks = JSON.parse(localStorage.getItem('lb_bookmarks') || '[]');
+  if (!bookmarks.includes(word)) {
+    bookmarks.push(word);
+    localStorage.setItem('lb_bookmarks', JSON.stringify(bookmarks));
+    showToast('🔖 Bookmarked: ' + word);
+    renderBookmarks();
+  }
+}
+
+// ===== AUDIO =====
+function renderLessons() {
+  document.getElementById('lessonList').innerHTML = lessons.map((l,i) => `
+    <div class="lesson-item ${i === currentLesson ? 'active' : ''}" onclick="selectLesson(${i})">
+      <div class="lesson-num" style="${l.done ? 'background:rgba(0,229,160,0.2);color:#00e5a0' : ''}">${i+1}</div>
+      <div class="lesson-info">
+        <div class="lesson-title">${l.title}</div>
+        <div class="lesson-meta">${l.meta}</div>
+      </div>
+      ${l.done ? '<span class="lesson-done">✅</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function selectLesson(i) {
+  currentLesson = i;
+  document.getElementById('audioTopic').textContent = lessons[i].title;
+  document.getElementById('audioSub').textContent = `Lesson ${i+1} of ${lessons.length}`;
+  renderLessons();
+  if (isPlaying) togglePlay();
+  showToast('📗 ' + lessons[i].title);
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('playBtn').textContent = isPlaying ? '⏸' : '▶';
+  document.getElementById('audioWave').classList.toggle('paused', !isPlaying);
+  if (isPlaying && 'speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(lessons[currentLesson].title + '. This is a lesson about ' + lessons[currentLesson].title.toLowerCase() + '. Listen carefully and learn.');
+    u.lang = 'en-US'; u.rate = 0.8;
+    speechSynthesis.speak(u);
+    u.onend = () => { isPlaying = false; document.getElementById('playBtn').textContent = '▶'; document.getElementById('audioWave').classList.add('paused'); };
+  }
+}
+
+function prevLesson() { if (currentLesson > 0) selectLesson(currentLesson - 1); }
+function nextLesson() { if (currentLesson < lessons.length - 1) selectLesson(currentLesson + 1); }
+
+function switchAudioLang(lang) {
+  currentAudioLang = lang;
+  document.getElementById('btnHome').classList.toggle('active', lang === 'home');
+  document.getElementById('btnSchool').classList.toggle('active', lang === 'school');
+  showToast(lang === 'home' ? '🏔️ Home Language mode' : '📖 School Language mode');
+}
+
+// ===== SENTENCE BUILDER =====
+function renderPracticeSets() {
+  loadPractice(currentPractice);
+  document.getElementById('practiceSets').innerHTML = practiceSets.map((p,i) => `
+    <div class="lesson-item ${i === currentPractice ? 'active' : ''}" onclick="loadPractice(${i})">
+      <div class="lesson-num">${i+1}</div>
+      <div class="lesson-info"><div class="lesson-title" style="font-size:0.82rem">${p.prompt}</div></div>
+    </div>
+  `).join('');
+}
+
+function loadPractice(i) {
+  currentPractice = i;
+  selectedWords = [];
+  const p = practiceSets[i];
+  document.getElementById('sentencePrompt').textContent = p.prompt;
+  document.getElementById('sentenceDisplay').innerHTML = '<span style="color:var(--muted);font-size:0.85rem;">Tap words below to build your sentence...</span>';
+  document.getElementById('sentenceDisplay').classList.remove('has-words');
+  document.getElementById('sentenceFeedback').style.display = 'none';
+  const shuffled = [...p.words].sort(() => Math.random() - 0.5);
+  document.getElementById('wordBank').innerHTML = shuffled.map(w => `
+    <div class="bank-chip" onclick="addWord('${w}', this)">${w}</div>
+  `).join('');
+  renderPracticeNav();
+}
+
+function renderPracticeNav() {
+  document.querySelectorAll('#practiceSets .lesson-item').forEach((el, i) => {
+    el.classList.toggle('active', i === currentPractice);
+  });
+}
+
+function addWord(word, el) {
+  if (el.classList.contains('used')) return;
+  selectedWords.push(word);
+  el.classList.add('used');
+  const display = document.getElementById('sentenceDisplay');
+  if (display.querySelector('span')) display.innerHTML = '';
+  display.classList.add('has-words');
+  const chip = document.createElement('div');
+  chip.className = 'word-chip';
+  chip.textContent = word;
+  chip.onclick = () => {
+    selectedWords = selectedWords.filter((w,i) => i !== selectedWords.lastIndexOf(word));
+    chip.remove();
+    el.classList.remove('used');
+    if (!display.children.length) {
+      display.innerHTML = '<span style="color:var(--muted);font-size:0.85rem;">Tap words below to build your sentence...</span>';
+      display.classList.remove('has-words');
+    }
+  };
+  display.appendChild(chip);
+  document.getElementById('sentenceFeedback').style.display = 'none';
+}
+
+function clearSentence() {
+  selectedWords = [];
+  const display = document.getElementById('sentenceDisplay');
+  display.innerHTML = '<span style="color:var(--muted);font-size:0.85rem;">Tap words below to build your sentence...</span>';
+  display.classList.remove('has-words');
+  document.querySelectorAll('.bank-chip').forEach(c => c.classList.remove('used'));
+  document.getElementById('sentenceFeedback').style.display = 'none';
+}
+
+function checkSentence() {
+  const answer = practiceSets[currentPractice].answer;
+  const correct = JSON.stringify(selectedWords) === JSON.stringify(answer);
+  const fb = document.getElementById('sentenceFeedback');
+  fb.style.display = 'block';
+  fb.className = 'sentence-feedback ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = correct ? '🎉 Excellent! Perfect sentence!' : '❌ Not quite right. Try again! Correct: ' + answer.join(' ');
+  if (correct) {
+    const stats = JSON.parse(localStorage.getItem('lb_stats') || '{"words":47,"lessons":12,"days":7}');
+    stats.words++;
+    localStorage.setItem('lb_stats', JSON.stringify(stats));
+    document.getElementById('statWords').textContent = stats.words;
+  }
+}
+
+// ===== TRACKER =====
+function renderSkills() {
+  document.getElementById('skillGrid').innerHTML = skills.map(s => {
+    const r = 28; const c = 2 * Math.PI * r;
+    const offset = c - (s.pct / 100) * c;
+    return `
+      <div class="skill-card">
+        <div class="skill-icon">${s.icon}</div>
+        <div class="skill-name">${s.name}</div>
+        <div class="skill-ring-wrap">
+          <svg class="skill-ring" width="70" height="70" viewBox="0 0 70 70">
+            <circle class="bg" cx="35" cy="35" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="0"/>
+            <circle class="fill" cx="35" cy="35" r="${r}" stroke="${s.color}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="skill-pct" style="color:${s.color}">${s.pct}%</div>
+        </div>
+        <div class="skill-level" style="color:${s.color}">Progress</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderParakh() {
+  document.getElementById('parakhLevels').innerHTML = parakhLevels.map((l,i) => `
+    <div class="parakh-level ${i === 0 ? 'reached' : ''} ${i === 1 ? 'current' : ''}">
+      <div class="parakh-dot"></div>
+      <div class="parakh-name">${l}</div>
+    </div>
+  `).join('');
+}
+
+function renderStreak() {
+  let html = '';
+  for (let i = 0; i < 28; i++) {
+    const done = i < 7 || Math.random() > 0.6;
+    html += `<div style="width:28px;height:28px;border-radius:6px;background:${done ? 'rgba(0,229,160,0.7)' : 'var(--card)'};border:1px solid ${done ? 'rgba(0,229,160,0.3)' : 'var(--border)'}"></div>`;
+  }
+  document.getElementById('streakGrid').innerHTML = html;
+}
+
+// ===== PROFILE =====
+function renderBookmarks() {
+  const bookmarks = JSON.parse(localStorage.getItem('lb_bookmarks') || '["Water","Fire","River"]');
+  document.getElementById('bookmarkList').innerHTML = bookmarks.length > 0
+    ? bookmarks.map(b => `
+      <div class="bookmark-item">
+        <span>🔖</span>
+        <span style="flex:1">${b}</span>
+        <span style="font-size:0.75rem;color:var(--muted)">Vocab</span>
+      </div>
+    `).join('')
+    : '<p style="font-size:0.82rem;color:var(--muted)">No bookmarks yet. Tap vocabulary cards to bookmark them!</p>';
+}
+
+function uploadPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = e.target.result;
+    localStorage.setItem('lb_photo', data);
+    document.getElementById('authorPhoto').src = data;
+    showToast('📷 Profile photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveNotes() {
+  localStorage.setItem('lb_notes', document.getElementById('studentNotes').value);
+}
+
+// ===== STORAGE =====
+function loadFromStorage() {
+  const photo = localStorage.getItem('lb_photo');
+  if (photo) document.getElementById('authorPhoto').src = photo;
+  const notes = localStorage.getItem('lb_notes');
+  if (notes) document.getElementById('studentNotes').value = notes;
+  const stats = JSON.parse(localStorage.getItem('lb_stats') || '{"words":47,"lessons":12,"days":7}');
+  document.getElementById('statWords').textContent = stats.words;
+  document.getElementById('statLessons').textContent = stats.lessons;
+  document.getElementById('statDays').textContent = stats.days;
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('SW registered'))
+    .catch(e => console.log('SW failed', e));
+}
+</script>
+</body>
+</html>

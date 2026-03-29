@@ -1,0 +1,46 @@
+{
+  "name": "LinguaBridge – Language Gap Bridging App",
+  "short_name": "LinguaBridge",
+  "description": "Bridge your home language to school language. Offline PWA by Mateen Yousuf.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0820",
+  "theme_color": "#1a0a2e",
+  "orientation": "portrait",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a0a2e'/><circle cx='96' cy='96' r='70' fill='none' stroke='%23f5a623' stroke-width='6'/><circle cx='96' cy='96' r='45' fill='none' stroke='%23e05aff' stroke-width='4'/><text x='96' y='115' text-anchor='middle' font-size='60' fill='%23f5a623'>🌐</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%231a0a2e'/><circle cx='256' cy='256' r='180' fill='none' stroke='%23f5a623' stroke-width='12'/><circle cx='256' cy='256' r='120' fill='none' stroke='%23e05aff' stroke-width='8'/><text x='256' y='295' text-anchor='middle' font-size='140' fill='%23f5a623'>🌐</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Vocabulary Bridge",
+      "short_name": "Vocab",
+      "description": "Open vocabulary word mapping",
+      "url": "./index.html#vocab",
+      "icons": [{"src": "data:image/png;base64,", "sizes": "96x96"}]
+    },
+    {
+      "name": "Audio Lessons",
+      "short_name": "Audio",
+      "description": "Listen to lessons",
+      "url": "./index.html#audio",
+      "icons": [{"src": "data:image/png;base64,", "sizes": "96x96"}]
+    }
+  ]
+}

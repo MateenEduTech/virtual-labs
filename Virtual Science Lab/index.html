@@ -1,0 +1,2972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="description" content="Virtual Science Lab – NEP 2020 & NCF 2023 aligned interactive science simulations"/>
+<meta name="theme-color" content="#00d4ff"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Virtual Science Lab | NEP 2020</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Exo+2:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+:root {
+  --bg-primary: #050810;
+  --bg-secondary: #0a0e1a;
+  --bg-card: #0d1425;
+  --bg-card-hover: #111827;
+  --accent-cyan: #00d4ff;
+  --accent-green: #00ff88;
+  --accent-orange: #ff6b35;
+  --accent-purple: #7c3aed;
+  --accent-yellow: #ffd700;
+  --text-primary: #e8f0fe;
+  --text-secondary: #94a3b8;
+  --text-muted: #4a5568;
+  --border: rgba(0,212,255,0.15);
+  --border-bright: rgba(0,212,255,0.4);
+  --glow-cyan: 0 0 20px rgba(0,212,255,0.4);
+  --glow-green: 0 0 20px rgba(0,255,136,0.4);
+  --glow-orange: 0 0 20px rgba(255,107,53,0.4);
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Exo 2', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated grid background */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(5,8,16,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-shadow: var(--glow-cyan);
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display:none; }
+
+.nav-tab {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  background: transparent;
+}
+.nav-tab:hover, .nav-tab.active {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--border-bright);
+  color: var(--accent-cyan);
+}
+
+/* ============================================================
+   SECTIONS (Pages)
+   ============================================================ */
+.section { display: none; position: relative; z-index: 1; }
+.section.active { display: block; }
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+.landing {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  max-width: 800px;
+  padding: 3rem 0 2rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.25);
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  animation: pulse-badge 2s infinite;
+}
+@keyframes pulse-badge {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(0,212,255,0); }
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 50%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: title-glow 3s ease-in-out infinite alternate;
+}
+@keyframes title-glow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.3); }
+}
+
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: var(--accent-cyan);
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.hero-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.hero-tag {
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.2);
+  color: var(--accent-green);
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.hero-cta-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: var(--transition);
+  box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,212,255,0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: var(--transition);
+}
+.btn-secondary:hover {
+  background: rgba(0,212,255,0.1);
+  transform: translateY(-2px);
+}
+
+/* Author Card */
+.author-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  margin: 2rem auto;
+  position: relative;
+  overflow: hidden;
+}
+.author-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+}
+
+.author-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+  flex-shrink: 0;
+}
+
+.author-info h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 0.25rem;
+}
+.author-info p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.author-info .author-role {
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  margin-top: 0.25rem;
+}
+
+/* NEP Banner */
+.nep-banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto 2rem;
+}
+
+.nep-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  transition: var(--transition);
+}
+.nep-item:hover {
+  border-color: var(--accent-cyan);
+  background: var(--bg-card-hover);
+  transform: translateY(-3px);
+}
+.nep-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.nep-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  letter-spacing: 1px;
+}
+
+/* Lab Cards Grid */
+.labs-section {
+  max-width: 900px;
+  width: 100%;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  position: relative;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+  margin: 0.5rem auto 0;
+}
+
+.labs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.lab-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.lab-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(0,212,255,0.05));
+  opacity: 0;
+  transition: var(--transition);
+}
+.lab-card:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-4px);
+  box-shadow: var(--glow-cyan);
+}
+.lab-card:hover::before { opacity: 1; }
+
+.lab-card.physics { --card-accent: #00d4ff; }
+.lab-card.chemistry { --card-accent: #00ff88; }
+.lab-card.biology { --card-accent: #ff6b35; }
+
+.lab-card:hover { border-color: var(--card-accent); box-shadow: 0 0 20px rgba(var(--card-accent-rgb),0.3); }
+
+.lab-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+.lab-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.lab-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.lab-experiments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.exp-chip {
+  background: rgba(0,212,255,0.08);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+.lab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 1px;
+}
+.lab-btn:hover { background: var(--accent-cyan); color: #000; }
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+  max-width: 700px;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  display: block;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   LAB PAGES
+   ============================================================ */
+.lab-page {
+  padding: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.lab-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.lab-header-icon { font-size: 2.5rem; }
+.lab-header-info h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+.lab-header-info p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.back-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.back-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+/* Experiment selector */
+.exp-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.exp-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+.exp-btn:hover, .exp-btn.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0,212,255,0.08);
+}
+
+/* Simulation canvas area */
+.sim-container {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 700px) {
+  .sim-container { grid-template-columns: 1fr; }
+}
+
+.sim-canvas-area {
+  background: #020408;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+}
+canvas {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.sim-controls {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.ctrl-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.ctrl-group {
+  margin-bottom: 1.25rem;
+}
+.ctrl-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+  font-family: var(--font-mono);
+}
+.ctrl-value {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0,212,255,0.2);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  cursor: pointer;
+  box-shadow: var(--glow-cyan);
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, var(--accent-cyan), rgba(0,212,255,0.2));
+  border-radius: 2px;
+}
+
+.sim-action-btns {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.sim-btn {
+  flex:1;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+  border: 1px solid;
+  min-width: 70px;
+}
+.sim-btn.start {
+  background: rgba(0,255,136,0.1);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+.sim-btn.start:hover { background: var(--accent-green); color: #000; }
+.sim-btn.pause {
+  background: rgba(255,107,53,0.1);
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+.sim-btn.pause:hover { background: var(--accent-orange); color: #000; }
+.sim-btn.reset {
+  background: rgba(124,58,237,0.1);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+}
+.sim-btn.reset:hover { background: var(--accent-purple); color: #fff; }
+
+/* Observation panel */
+.observation-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.obs-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-green);
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+.obs-readings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.obs-reading {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+}
+.obs-reading-val {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  display: block;
+}
+.obs-reading-unit {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.obs-log {
+  background: #020408;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-green);
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.8;
+}
+.obs-log::-webkit-scrollbar { width:4px; }
+.obs-log::-webkit-scrollbar-thumb { background: var(--border); border-radius:2px; }
+
+/* Lab Notebook */
+.notebook-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.notebook-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.nb-tab {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+}
+.nb-tab.active {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+textarea.notebook-input {
+  width: 100%;
+  background: #020408;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.75rem;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: var(--transition);
+}
+textarea.notebook-input:focus { border-color: var(--accent-cyan); }
+.notebook-save-btn {
+  margin-top: 0.5rem;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.notebook-save-btn:hover { background: var(--accent-cyan); color: #000; }
+
+/* Concept panel */
+.concept-panel {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.concept-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-yellow);
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+.concept-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.concept-formula {
+  background: rgba(255,215,0,0.06);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent-yellow);
+  text-align: center;
+}
+
+/* Quiz section */
+.quiz-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.quiz-question {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.quiz-options {
+  display: grid;
+  gap: 0.5rem;
+}
+.quiz-option {
+  background: rgba(0,212,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-secondary);
+  text-align: left;
+  font-family: var(--font-body);
+}
+.quiz-option:hover { border-color: var(--accent-cyan); color: var(--text-primary); background: rgba(0,212,255,0.08); }
+.quiz-option.correct { background: rgba(0,255,136,0.1); border-color: var(--accent-green); color: var(--accent-green); }
+.quiz-option.wrong { background: rgba(255,107,53,0.1); border-color: var(--accent-orange); color: var(--accent-orange); }
+
+.quiz-score {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--accent-cyan);
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+/* Progress bar */
+.progress-bar-wrap {
+  background: rgba(0,0,0,0.3);
+  border-radius: 50px;
+  height: 6px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+  transition: width 0.5s ease;
+}
+
+/* Achievement badges */
+.badges-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.badge {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  min-width: 100px;
+  transition: var(--transition);
+}
+.badge.earned {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 10px rgba(255,215,0,0.2);
+}
+.badge-icon { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+.badge-name {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+.badge.earned .badge-name { color: var(--accent-yellow); }
+
+/* ============================================================
+   ABOUT PAGE
+   ============================================================ */
+.about-page {
+  padding: 2rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.about-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.about-page h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
+}
+.about-author-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.about-author-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+  flex-shrink: 0;
+}
+.about-author-info h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--accent-cyan);
+  margin-bottom: 0.3rem;
+}
+.about-author-info .role-badge {
+  display: inline-block;
+  background: rgba(0,255,136,0.1);
+  border: 1px solid rgba(0,255,136,0.3);
+  color: var(--accent-green);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  margin-bottom: 0.75rem;
+}
+.about-author-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.info-card h3 {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.info-card p, .info-card li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.info-card ul { padding-left: 1.25rem; }
+.info-card li { margin-bottom: 0.4rem; }
+.highlight-text { color: var(--accent-cyan); font-weight: 600; }
+.green-text { color: var(--accent-green); font-weight: 600; }
+
+.policy-badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.policy-badge {
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.3);
+  color: #a78bfa;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   MANUAL PAGE
+   ============================================================ */
+.manual-page {
+  padding: 2rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.manual-page h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
+}
+.manual-toc {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.manual-toc h3 {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--accent-cyan);
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
+}
+.toc-list { list-style: none; }
+.toc-list li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(0,212,255,0.05);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.toc-list li:hover { color: var(--accent-cyan); padding-left: 0.5rem; }
+.toc-num {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  margin-right: 0.5rem;
+  font-size: 0.72rem;
+}
+
+.manual-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.manual-section h3 {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+.manual-section p, .manual-section li {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.manual-section ul, .manual-section ol { padding-left: 1.25rem; margin: 0.5rem 0; }
+.manual-section li { margin-bottom: 0.4rem; }
+.step-box {
+  background: rgba(0,212,255,0.04);
+  border-left: 3px solid var(--accent-cyan);
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.step-num {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.author-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  margin-top: 2rem;
+}
+.author-footer img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-cyan);
+}
+.author-footer-info {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.author-footer-info strong { color: var(--accent-cyan); font-family: var(--font-display); font-size: 0.8rem; }
+
+/* ============================================================
+   INSTALL BANNER
+   ============================================================ */
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--accent-cyan);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 999;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 -10px 30px rgba(0,212,255,0.1);
+}
+.install-banner.visible { transform: translateY(0); }
+.install-text { font-size: 0.82rem; color: var(--text-secondary); }
+.install-text strong { color: var(--accent-cyan); }
+.install-btn {
+  background: var(--accent-cyan);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+.install-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.hidden { display: none !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .nav-logo { font-size: 0.75rem; }
+  .hero-title { font-size: 1.8rem; }
+  .about-author-section { flex-direction: column; align-items: center; text-align: center; }
+  .stats-row { gap: 1rem; }
+}
+
+/* Glow line animation for simulation */
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+.scan-effect::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+  animation: scan-line 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Loading animation */
+@keyframes fadeInUp {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-logo" onclick="showSection('home')">⚗️ VIRTUAL SCIENCE LAB</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('home')">🏠 Home</button>
+    <button class="nav-tab" onclick="showSection('physics')">⚡ Physics</button>
+    <button class="nav-tab" onclick="showSection('chemistry')">🧪 Chemistry</button>
+    <button class="nav-tab" onclick="showSection('biology')">🔬 Biology</button>
+    <button class="nav-tab" onclick="showSection('notebook')">📓 Notebook</button>
+    <button class="nav-tab" onclick="showSection('about')">ℹ️ About</button>
+    <button class="nav-tab" onclick="showSection('manual')">📖 Manual</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     SECTION: HOME / LANDING
+     ============================================================ -->
+<div id="sec-home" class="section active">
+  <div class="landing">
+
+    <!-- Hero -->
+    <div class="hero fade-in">
+      <div class="hero-badge">⚡ NEP 2020 &amp; NCF 2023 ALIGNED &nbsp;|&nbsp; OFFLINE PWA</div>
+      <div class="hero-subtitle">EXPERIENTIAL SCIENCE EDUCATION</div>
+      <h1 class="hero-title">Virtual Science Lab</h1>
+      <p class="hero-desc">
+        An immersive digital laboratory empowering every student to perform interactive science experiments —
+        aligned with <strong style="color:var(--accent-cyan)">National Education Policy 2020</strong> and
+        <strong style="color:var(--accent-green)">National Curriculum Framework 2023</strong>.
+      </p>
+      <div class="hero-tags">
+        <span class="hero-tag">NEP 2020</span>
+        <span class="hero-tag">NCF 2023</span>
+        <span class="hero-tag">PARAKH</span>
+        <span class="hero-tag">NCERT</span>
+        <span class="hero-tag">Offline PWA</span>
+        <span class="hero-tag">Experiential Learning</span>
+      </div>
+      <div class="hero-cta-row">
+        <button class="btn-primary" onclick="showSection('physics')">🔬 Enter Physics Lab</button>
+        <button class="btn-secondary" onclick="showSection('chemistry')">⚗️ Enter Chemistry Lab</button>
+      </div>
+    </div>
+
+    <!-- Author Card -->
+    <div class="author-card fade-in">
+      <img src="author.jpg" alt="Mateen Yousuf" class="author-photo"/>
+      <div class="author-info">
+        <h3>Mateen Yousuf</h3>
+        <div class="author-role">TEACHER – SCHOOL EDUCATION DEPARTMENT, J&amp;K</div>
+        <p>Concept Developer &amp; Educational Technologist. Designing NEP 2020-aligned digital tools for science education across India.</p>
+      </div>
+    </div>
+
+    <!-- NEP alignment items -->
+    <div class="nep-banner fade-in">
+      <div class="nep-item">
+        <div class="nep-icon">📋</div>
+        <div class="nep-label">NEP 2020</div>
+      </div>
+      <div class="nep-item">
+        <div class="nep-icon">📚</div>
+        <div class="nep-label">NCF 2023</div>
+      </div>
+      <div class="nep-item">
+        <div class="nep-icon">🎯</div>
+        <div class="nep-label">PARAKH</div>
+      </div>
+      <div class="nep-item">
+        <div class="nep-icon">🏛️</div>
+        <div class="nep-label">NCERT</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row fade-in">
+      <div class="stat-item">
+        <span class="stat-num">3</span>
+        <span class="stat-label">LABS</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">12+</span>
+        <span class="stat-label">EXPERIMENTS</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">100%</span>
+        <span class="stat-label">OFFLINE</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">∞</span>
+        <span class="stat-label">VARIABLES</span>
+      </div>
+    </div>
+
+    <!-- Lab Cards -->
+    <div class="labs-section fade-in">
+      <div class="section-title">CHOOSE YOUR LABORATORY</div>
+      <div class="labs-grid">
+
+        <div class="lab-card physics" onclick="showSection('physics')">
+          <span class="lab-icon">⚡</span>
+          <div class="lab-title">Physics Lab</div>
+          <p class="lab-desc">Explore fundamental physical laws through dynamic simulations. Manipulate variables and observe cause-effect relationships in real time.</p>
+          <div class="lab-experiments">
+            <span class="exp-chip">Inclined Plane</span>
+            <span class="exp-chip">Optics</span>
+            <span class="exp-chip">Circuits</span>
+            <span class="exp-chip">Pendulum</span>
+          </div>
+          <button class="lab-btn">ENTER LAB →</button>
+        </div>
+
+        <div class="lab-card chemistry" onclick="showSection('chemistry')">
+          <span class="lab-icon">🧪</span>
+          <div class="lab-title">Chemistry Lab</div>
+          <p class="lab-desc">Safely conduct chemical experiments virtually. Observe reactions, color changes, and molecular interactions without any safety risk.</p>
+          <div class="lab-experiments">
+            <span class="exp-chip">Acid-Base</span>
+            <span class="exp-chip">Electrolysis</span>
+            <span class="exp-chip">Reactions</span>
+            <span class="exp-chip">Titration</span>
+          </div>
+          <button class="lab-btn">ENTER LAB →</button>
+        </div>
+
+        <div class="lab-card biology" onclick="showSection('biology')">
+          <span class="lab-icon">🔬</span>
+          <div class="lab-title">Biology Lab</div>
+          <p class="lab-desc">Explore living systems, cellular structures, and life processes through interactive visual simulations aligned with NCF 2023.</p>
+          <div class="lab-experiments">
+            <span class="exp-chip">Microscopy</span>
+            <span class="exp-chip">Photosynthesis</span>
+            <span class="exp-chip">Osmosis</span>
+            <span class="exp-chip">Enzymes</span>
+          </div>
+          <button class="lab-btn">ENTER LAB →</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: PHYSICS LAB
+     ============================================================ -->
+<div id="sec-physics" class="section">
+  <div class="lab-page">
+    <div class="lab-header">
+      <div class="lab-header-icon">⚡</div>
+      <div class="lab-header-info">
+        <h2>Physics Laboratory</h2>
+        <p>NEP 2020 | Experiential Learning | Inquiry-Based Science</p>
+      </div>
+      <button class="back-btn" onclick="showSection('home')">← Back</button>
+    </div>
+
+    <!-- Experiment selector -->
+    <div class="exp-selector">
+      <button class="exp-btn active" onclick="loadPhysicsExp('pendulum', this)">🕰️ Simple Pendulum</button>
+      <button class="exp-btn" onclick="loadPhysicsExp('incline', this)">📐 Inclined Plane</button>
+      <button class="exp-btn" onclick="loadPhysicsExp('optics', this)">🔦 Light Refraction</button>
+      <button class="exp-btn" onclick="loadPhysicsExp('circuit', this)">💡 Electric Circuit</button>
+    </div>
+
+    <!-- Concept Panel -->
+    <div class="concept-panel" id="physics-concept">
+      <div class="concept-title">📐 Concept – Simple Pendulum</div>
+      <p class="concept-text">A simple pendulum exhibits <span class="highlight-text">Simple Harmonic Motion (SHM)</span>. Its period depends on the length of the string and gravitational acceleration.</p>
+      <div class="concept-formula">T = 2π√(L/g)</div>
+      <p class="concept-text">As per <span class="green-text">NCF 2023</span>, students learn by manipulating variables — change length or gravity and observe how the period changes. This develops scientific reasoning as emphasized in <span class="highlight-text">NEP 2020</span>.</p>
+    </div>
+
+    <!-- Simulation -->
+    <div class="sim-container">
+      <div class="sim-canvas-area scan-effect">
+        <canvas id="physicsCanvas" height="300"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="ctrl-title">⚙️ CONTROL PANEL</div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Length (m)</span>
+            <span class="ctrl-value" id="length-val">1.0</span>
+          </div>
+          <input type="range" id="ctrl-length" min="0.2" max="2.0" step="0.1" value="1.0" oninput="updatePhysicsCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Gravity (m/s²)</span>
+            <span class="ctrl-value" id="gravity-val">9.8</span>
+          </div>
+          <input type="range" id="ctrl-gravity" min="1.6" max="25" step="0.1" value="9.8" oninput="updatePhysicsCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Amplitude (°)</span>
+            <span class="ctrl-value" id="amplitude-val">30</span>
+          </div>
+          <input type="range" id="ctrl-amplitude" min="5" max="80" step="1" value="30" oninput="updatePhysicsCtrl()"/>
+        </div>
+        <div class="sim-action-btns">
+          <button class="sim-btn start" onclick="startPhysicsSim()">▶ START</button>
+          <button class="sim-btn pause" onclick="pausePhysicsSim()">⏸ PAUSE</button>
+          <button class="sim-btn reset" onclick="resetPhysicsSim()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observations -->
+    <div class="observation-panel">
+      <div class="obs-title">📊 Live Observations</div>
+      <div class="obs-readings">
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-period">2.01</span>
+          <span class="obs-reading-unit">PERIOD (s)</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-frequency">0.50</span>
+          <span class="obs-reading-unit">FREQUENCY (Hz)</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-angle">30.0</span>
+          <span class="obs-reading-unit">ANGLE (°)</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-velocity">0.00</span>
+          <span class="obs-reading-unit">VELOCITY (m/s)</span>
+        </div>
+      </div>
+      <div class="obs-log" id="physics-log">
+        &gt; Simulation ready. Press START to begin experiment.<br/>
+        &gt; NEP 2020: Observe how changing length affects period.<br/>
+        &gt; NCF 2023: Record your hypothesis in the Notebook tab.
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div class="quiz-card">
+      <div class="quiz-score">Score: <span id="phys-score">0</span>/3</div>
+      <div id="phys-quiz-area"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: CHEMISTRY LAB
+     ============================================================ -->
+<div id="sec-chemistry" class="section">
+  <div class="lab-page">
+    <div class="lab-header">
+      <div class="lab-header-icon">🧪</div>
+      <div class="lab-header-info">
+        <h2>Chemistry Laboratory</h2>
+        <p>Safe Virtual Reactions | NEP 2020 | NCF 2023 Aligned</p>
+      </div>
+      <button class="back-btn" onclick="showSection('home')">← Back</button>
+    </div>
+
+    <div class="exp-selector">
+      <button class="exp-btn active" onclick="loadChemExp('acidbase', this)">🔴 Acid-Base Reaction</button>
+      <button class="exp-btn" onclick="loadChemExp('electrolysis', this)">⚡ Electrolysis</button>
+      <button class="exp-btn" onclick="loadChemExp('combustion', this)">🔥 Combustion</button>
+      <button class="exp-btn" onclick="loadChemExp('titration', this)">🧫 Titration</button>
+    </div>
+
+    <div class="concept-panel" id="chem-concept">
+      <div class="concept-title">🔴 Concept – Acid-Base Reaction</div>
+      <p class="concept-text">When an acid and base react, they undergo <span class="highlight-text">neutralization</span>, producing salt and water. The pH changes from acidic to neutral to basic.</p>
+      <div class="concept-formula">HCl + NaOH → NaCl + H₂O &nbsp;|&nbsp; pH: 0–14</div>
+      <p class="concept-text">As per <span class="green-text">NCF 2023</span>, students observe color changes using indicators like litmus. This hands-on approach aligns with <span class="highlight-text">NEP 2020</span>'s emphasis on experiential science learning.</p>
+    </div>
+
+    <div class="sim-container">
+      <div class="sim-canvas-area scan-effect">
+        <canvas id="chemCanvas" height="300"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="ctrl-title">⚙️ CONTROL PANEL</div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Acid Volume (mL)</span>
+            <span class="ctrl-value" id="acid-val">50</span>
+          </div>
+          <input type="range" id="ctrl-acid" min="0" max="100" value="50" oninput="updateChemCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Base Volume (mL)</span>
+            <span class="ctrl-value" id="base-val">50</span>
+          </div>
+          <input type="range" id="ctrl-base" min="0" max="100" value="50" oninput="updateChemCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Temperature (°C)</span>
+            <span class="ctrl-value" id="temp-val">25</span>
+          </div>
+          <input type="range" id="ctrl-temp" min="0" max="100" value="25" oninput="updateChemCtrl()"/>
+        </div>
+        <div class="sim-action-btns">
+          <button class="sim-btn start" onclick="startChemSim()">▶ REACT</button>
+          <button class="sim-btn pause" onclick="pauseChemSim()">⏸ PAUSE</button>
+          <button class="sim-btn reset" onclick="resetChemSim()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="observation-panel">
+      <div class="obs-title">📊 Live Observations</div>
+      <div class="obs-readings">
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-ph">7.0</span>
+          <span class="obs-reading-unit">pH VALUE</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-color" style="font-size:1.8rem">🟢</span>
+          <span class="obs-reading-unit">INDICATOR</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-reaction">—</span>
+          <span class="obs-reading-unit">REACTION</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-energy">0</span>
+          <span class="obs-reading-unit">HEAT (kJ/mol)</span>
+        </div>
+      </div>
+      <div class="obs-log" id="chem-log">
+        &gt; Chemistry Lab ready. Adjust acid/base volumes and press REACT.<br/>
+        &gt; NEP 2020: Observe pH changes and indicator color shifts.<br/>
+        &gt; Record observations in your Lab Notebook.
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-score">Score: <span id="chem-score">0</span>/3</div>
+      <div id="chem-quiz-area"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: BIOLOGY LAB
+     ============================================================ -->
+<div id="sec-biology" class="section">
+  <div class="lab-page">
+    <div class="lab-header">
+      <div class="lab-header-icon">🔬</div>
+      <div class="lab-header-info">
+        <h2>Biology Laboratory</h2>
+        <p>Life Processes | Cell Biology | Ecology | NCF 2023</p>
+      </div>
+      <button class="back-btn" onclick="showSection('home')">← Back</button>
+    </div>
+
+    <div class="exp-selector">
+      <button class="exp-btn active" onclick="loadBioExp('cell', this)">🦠 Cell Microscopy</button>
+      <button class="exp-btn" onclick="loadBioExp('photosynthesis', this)">🌿 Photosynthesis</button>
+      <button class="exp-btn" onclick="loadBioExp('osmosis', this)">💧 Osmosis</button>
+      <button class="exp-btn" onclick="loadBioExp('enzyme', this)">🔬 Enzyme Activity</button>
+    </div>
+
+    <div class="concept-panel" id="bio-concept">
+      <div class="concept-title">🦠 Concept – Cell Structure</div>
+      <p class="concept-text">The <span class="highlight-text">cell is the fundamental unit of life</span>. Plant cells have a cell wall, chloroplasts, and a large vacuole. Animal cells lack these but have lysosomes and centrioles.</p>
+      <div class="concept-formula">Plant Cell: Cell Wall + Chloroplast + Vacuole | Animal Cell: Lysosome + Centriole</div>
+      <p class="concept-text">As per <span class="green-text">NCF 2023</span>, observation-based learning deepens understanding of cellular biology. <span class="highlight-text">NEP 2020</span> encourages use of digital microscopy tools for inquiry-based learning.</p>
+    </div>
+
+    <div class="sim-container">
+      <div class="sim-canvas-area scan-effect">
+        <canvas id="bioCanvas" height="300"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="ctrl-title">⚙️ CONTROL PANEL</div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Magnification</span>
+            <span class="ctrl-value" id="mag-val">100x</span>
+          </div>
+          <input type="range" id="ctrl-mag" min="1" max="10" value="3" oninput="updateBioCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Focus</span>
+            <span class="ctrl-value" id="focus-val">50%</span>
+          </div>
+          <input type="range" id="ctrl-focus" min="0" max="100" value="50" oninput="updateBioCtrl()"/>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Stain Intensity</span>
+            <span class="ctrl-value" id="stain-val">50%</span>
+          </div>
+          <input type="range" id="ctrl-stain" min="0" max="100" value="50" oninput="updateBioCtrl()"/>
+        </div>
+        <div class="sim-action-btns">
+          <button class="sim-btn start" onclick="startBioSim()">▶ VIEW</button>
+          <button class="sim-btn pause" onclick="pauseBioSim()">⏸ PAUSE</button>
+          <button class="sim-btn reset" onclick="resetBioSim()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="observation-panel">
+      <div class="obs-title">📊 Live Observations</div>
+      <div class="obs-readings">
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-cells">12</span>
+          <span class="obs-reading-unit">CELLS VISIBLE</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-organelles">8</span>
+          <span class="obs-reading-unit">ORGANELLES</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-zoom">100x</span>
+          <span class="obs-reading-unit">MAGNIFICATION</span>
+        </div>
+        <div class="obs-reading">
+          <span class="obs-reading-val" id="obs-clarity">Good</span>
+          <span class="obs-reading-unit">CLARITY</span>
+        </div>
+      </div>
+      <div class="obs-log" id="bio-log">
+        &gt; Biology Lab ready. Press VIEW to start microscope simulation.<br/>
+        &gt; NEP 2020: Use observation to develop scientific thinking.<br/>
+        &gt; Adjust magnification and focus for best view.
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-score">Score: <span id="bio-score">0</span>/3</div>
+      <div id="bio-quiz-area"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: NOTEBOOK
+     ============================================================ -->
+<div id="sec-notebook" class="section">
+  <div class="lab-page">
+    <div class="lab-header">
+      <div class="lab-header-icon">📓</div>
+      <div class="lab-header-info">
+        <h2>Digital Lab Notebook</h2>
+        <p>Record observations, hypotheses &amp; conclusions | NEP 2020 aligned</p>
+      </div>
+      <button class="back-btn" onclick="showSection('home')">← Back</button>
+    </div>
+
+    <div class="notebook-section">
+      <div class="notebook-tabs">
+        <button class="nb-tab active" onclick="switchNBTab('hypothesis', this)">💡 Hypothesis</button>
+        <button class="nb-tab" onclick="switchNBTab('observations', this)">👁️ Observations</button>
+        <button class="nb-tab" onclick="switchNBTab('conclusion', this)">✅ Conclusion</button>
+      </div>
+
+      <div id="nb-hypothesis">
+        <textarea class="notebook-input" id="hypothesis-input" placeholder="Write your hypothesis here... 
+Example: If I increase the length of the pendulum, then the time period will increase because..."></textarea>
+        <button class="notebook-save-btn" onclick="saveNBEntry('hypothesis')">💾 SAVE HYPOTHESIS</button>
+      </div>
+      <div id="nb-observations" class="hidden">
+        <textarea class="notebook-input" id="observations-input" placeholder="Record your observations...
+Example: When length = 1m, period = 2.01s
+When length = 0.5m, period = 1.42s..."></textarea>
+        <button class="notebook-save-btn" onclick="saveNBEntry('observations')">💾 SAVE OBSERVATIONS</button>
+      </div>
+      <div id="nb-conclusion" class="hidden">
+        <textarea class="notebook-input" id="conclusion-input" placeholder="Write your conclusion...
+Example: The experiment confirmed our hypothesis. As the length increased by X, the period increased by Y..."></textarea>
+        <button class="notebook-save-btn" onclick="saveNBEntry('conclusion')">💾 SAVE CONCLUSION</button>
+      </div>
+    </div>
+
+    <!-- Saved entries -->
+    <div class="info-card" id="saved-entries">
+      <h3>📋 SAVED ENTRIES</h3>
+      <div id="entries-list" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.8">
+        No saved entries yet. Start writing in the notebook above.
+      </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="info-card">
+      <h3>🏆 ACHIEVEMENTS</h3>
+      <div class="badges-section" id="badges-area"></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="info-card">
+      <h3>📈 PROGRESS</h3>
+      <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.5rem">Physics Lab</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-physics" style="width:0%"></div></div>
+      <div style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0.25rem">Chemistry Lab</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-chemistry" style="width:0%"></div></div>
+      <div style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0.25rem">Biology Lab</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-biology" style="width:0%"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: ABOUT
+     ============================================================ -->
+<div id="sec-about" class="section">
+  <div class="about-page">
+
+    <div class="about-hero">
+      <h2>About Virtual Science Lab</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;max-width:600px;margin:0 auto">A comprehensive digital solution for science education in resource-limited schools — built on NEP 2020, NCF 2023, PARAKH, and NCERT frameworks.</p>
+    </div>
+
+    <!-- Author -->
+    <div class="about-author-section">
+      <img src="author.jpg" alt="Mateen Yousuf" class="about-author-photo"/>
+      <div class="about-author-info">
+        <h3>Mateen Yousuf</h3>
+        <span class="role-badge">TEACHER – SCHOOL EDUCATION DEPARTMENT, J&K</span>
+        <p>Mateen Yousuf is an innovative educator and education technology concept developer from Jammu &amp; Kashmir. Deeply committed to bridging the digital divide in science education, he has conceptualized a suite of NEP 2020-aligned digital learning tools to ensure every student — regardless of school infrastructure — has access to quality, hands-on science education. This Virtual Science Lab is part of a larger vision to create a national digital education ecosystem aligned with India's education reform goals.</p>
+      </div>
+    </div>
+
+    <!-- Policy Alignment -->
+    <div class="info-card">
+      <h3>POLICY ALIGNMENT</h3>
+      <div class="policy-badges">
+        <span class="policy-badge">NEP 2020</span>
+        <span class="policy-badge">NCF 2023</span>
+        <span class="policy-badge">PARAKH</span>
+        <span class="policy-badge">NCERT</span>
+      </div>
+      <p><span class="highlight-text">National Education Policy 2020</span> strongly emphasizes experiential learning, scientific temper, and technology integration. This app directly addresses NEP 2020's vision by providing interactive, inquiry-based science learning to every student.</p><br/>
+      <p><span class="green-text">National Curriculum Framework 2023</span> stresses activity-based science learning and conceptual understanding through observation. Every simulation in this lab is designed to align with NCF's pedagogical philosophy.</p><br/>
+      <p><span class="highlight-text">PARAKH</span> (Performance Assessment, Review, and Analysis of Knowledge for Holistic Development) evaluates conceptual understanding and experimental reasoning. This lab builds exactly these competencies.</p>
+    </div>
+
+    <!-- Problem Solved -->
+    <div class="info-card">
+      <h3>THE PROBLEM THIS SOLVES</h3>
+      <ul>
+        <li>Thousands of schools across India lack proper laboratory infrastructure</li>
+        <li>Students memorize experiments instead of performing them</li>
+        <li>Safety concerns prevent access to certain chemical experiments</li>
+        <li>Shortage of trained lab assistants in rural and semi-urban schools</li>
+        <li>Science education becomes purely theoretical without practical exposure</li>
+      </ul>
+      <br/>
+      <p>The Virtual Science Lab provides a <span class="highlight-text">safe, interactive, offline digital environment</span> where students can conduct experiments, manipulate variables, and understand scientific principles through virtual experimentation — without any physical infrastructure requirement.</p>
+    </div>
+
+    <!-- Educational Theory -->
+    <div class="info-card">
+      <h3>EDUCATIONAL THEORY</h3>
+      <ul>
+        <li><span class="highlight-text">Experiential Learning Theory</span> – Students learn by doing and observing</li>
+        <li><span class="green-text">Inquiry-Based Learning</span> – Students form and test hypotheses</li>
+        <li><span class="highlight-text">Constructivist Theory</span> – Knowledge built through active interaction</li>
+        <li><span class="green-text">Scientific Method Learning</span> – Hypothesis → Experiment → Conclusion</li>
+      </ul>
+    </div>
+
+    <!-- Tech -->
+    <div class="info-card">
+      <h3>TECHNOLOGY</h3>
+      <ul>
+        <li><span class="highlight-text">Progressive Web App (PWA)</span> – Works offline, installs like a native app</li>
+        <li>Built with HTML, CSS, JavaScript – No dependencies, no servers</li>
+        <li>LocalStorage – Student progress saved on device</li>
+        <li>Canvas API – Real-time physics/chemistry/biology simulations</li>
+        <li>Service Worker – Full offline caching</li>
+        <li>Installable on Android and desktop via browser</li>
+      </ul>
+    </div>
+
+    <div class="author-footer">
+      <img src="author.jpg" alt="Mateen Yousuf"/>
+      <div class="author-footer-info">
+        <strong>Mateen Yousuf</strong><br/>
+        Teacher – School Education Department, J&amp;K<br/>
+        Concept Developer | Virtual Science Lab | NEP 2020
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION: MANUAL
+     ============================================================ -->
+<div id="sec-manual" class="section">
+  <div class="manual-page">
+
+    <div style="margin-bottom:1.5rem">
+      <h2>User Manual</h2>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.25rem">Complete guide to using the Virtual Science Lab | NEP 2020 &amp; NCF 2023 Aligned</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="manual-toc">
+      <h3>TABLE OF CONTENTS</h3>
+      <ul class="toc-list">
+        <li><span class="toc-num">01</span>Getting Started &amp; Installation</li>
+        <li><span class="toc-num">02</span>Navigation &amp; Interface Overview</li>
+        <li><span class="toc-num">03</span>Physics Lab – How to Use</li>
+        <li><span class="toc-num">04</span>Chemistry Lab – How to Use</li>
+        <li><span class="toc-num">05</span>Biology Lab – How to Use</li>
+        <li><span class="toc-num">06</span>Lab Notebook – Recording Results</li>
+        <li><span class="toc-num">07</span>Conducting Simulations Step-by-Step</li>
+        <li><span class="toc-num">08</span>Using Quizzes for Assessment</li>
+        <li><span class="toc-num">09</span>Teacher's Guide</li>
+        <li><span class="toc-num">10</span>NEP 2020 &amp; NCF 2023 Integration</li>
+      </ul>
+    </div>
+
+    <!-- Section 01 -->
+    <div class="manual-section">
+      <h3>01 — GETTING STARTED &amp; INSTALLATION</h3>
+      <p>The Virtual Science Lab is a <span class="highlight-text">Progressive Web App (PWA)</span> that can be installed directly on your Android phone or desktop computer without visiting any app store.</p>
+      <div class="step-box"><div class="step-num">STEP 1</div>Open the app link in Chrome or Edge browser on your device.</div>
+      <div class="step-box"><div class="step-num">STEP 2</div>You will see an "Install App" banner at the bottom of the screen. Tap "Install Now".</div>
+      <div class="step-box"><div class="step-num">STEP 3</div>The app installs on your home screen like a native app.</div>
+      <div class="step-box"><div class="step-num">STEP 4</div>Once installed, the app works fully offline — no internet needed.</div>
+      <p style="margin-top:0.75rem"><span class="green-text">Offline use:</span> All simulations, quizzes, and the notebook function entirely without internet after first load.</p>
+    </div>
+
+    <!-- Section 02 -->
+    <div class="manual-section">
+      <h3>02 — NAVIGATION &amp; INTERFACE</h3>
+      <p>The navigation bar at the top provides access to all sections:</p>
+      <ul style="margin-top:0.5rem">
+        <li><span class="highlight-text">🏠 Home</span> – Landing page with lab overview and author info</li>
+        <li><span class="highlight-text">⚡ Physics</span> – Physics simulation laboratory</li>
+        <li><span class="highlight-text">🧪 Chemistry</span> – Chemistry simulation laboratory</li>
+        <li><span class="highlight-text">🔬 Biology</span> – Biology simulation laboratory</li>
+        <li><span class="highlight-text">📓 Notebook</span> – Digital lab notebook &amp; achievements</li>
+        <li><span class="highlight-text">ℹ️ About</span> – App background, policy alignment</li>
+        <li><span class="highlight-text">📖 Manual</span> – This user guide</li>
+      </ul>
+    </div>
+
+    <!-- Section 03 -->
+    <div class="manual-section">
+      <h3>03 — PHYSICS LAB – HOW TO USE</h3>
+      <p>The Physics Lab contains four experiments: Simple Pendulum, Inclined Plane, Light Refraction, and Electric Circuit.</p>
+      <ol style="margin-top:0.5rem">
+        <li>Select an experiment from the tabs at the top of the lab page.</li>
+        <li>Read the <span class="highlight-text">Concept Panel</span> — it explains the scientific principle and relevant formula.</li>
+        <li>Use the <span class="highlight-text">Control Panel</span> sliders to set variables (e.g., length, gravity, amplitude for a pendulum).</li>
+        <li>Press <span class="green-text">▶ START</span> to begin the animation.</li>
+        <li>Watch the <span class="highlight-text">Live Observations panel</span> — readings update in real time.</li>
+        <li>Change a variable and observe how readings change — this is inquiry-based learning as per NCF 2023.</li>
+        <li>Record your findings in the <span class="highlight-text">Notebook</span>.</li>
+        <li>Press <span class="highlight-text">⏸ PAUSE</span> to freeze simulation; <span class="highlight-text">↺ RESET</span> to restart.</li>
+      </ol>
+    </div>
+
+    <!-- Section 04 -->
+    <div class="manual-section">
+      <h3>04 — CHEMISTRY LAB – HOW TO USE</h3>
+      <p>Experiments: Acid-Base Reaction, Electrolysis, Combustion, Titration.</p>
+      <ol style="margin-top:0.5rem">
+        <li>Select an experiment from the tabs.</li>
+        <li>Read the Concept Panel to understand the chemical reaction.</li>
+        <li>Adjust <span class="highlight-text">Acid Volume</span>, <span class="highlight-text">Base Volume</span>, and <span class="highlight-text">Temperature</span> sliders.</li>
+        <li>Press <span class="green-text">▶ REACT</span> to start the simulation.</li>
+        <li>Observe pH changes, indicator color changes, bubble formation, and heat values in the Live Observations panel.</li>
+        <li>Change acid/base ratio and note how pH shifts — from acidic (red) to neutral (green) to basic (blue).</li>
+        <li>Record observations in the Notebook.</li>
+      </ol>
+    </div>
+
+    <!-- Section 05 -->
+    <div class="manual-section">
+      <h3>05 — BIOLOGY LAB – HOW TO USE</h3>
+      <p>Experiments: Cell Microscopy, Photosynthesis, Osmosis, Enzyme Activity.</p>
+      <ol style="margin-top:0.5rem">
+        <li>Select an experiment.</li>
+        <li>Read the Concept Panel to understand the biological system being studied.</li>
+        <li>Adjust <span class="highlight-text">Magnification</span>, <span class="highlight-text">Focus</span>, and <span class="highlight-text">Stain Intensity</span>.</li>
+        <li>Press <span class="green-text">▶ VIEW</span> to start the simulation.</li>
+        <li>Observe the animated biological structures — cells, organelles, processes.</li>
+        <li>At different magnifications, different details become visible — simulating real microscopy.</li>
+        <li>Note cell count, organelle visibility, and clarity in your Notebook.</li>
+      </ol>
+    </div>
+
+    <!-- Section 06 -->
+    <div class="manual-section">
+      <h3>06 — LAB NOTEBOOK</h3>
+      <p>The Lab Notebook (aligned with <span class="highlight-text">NEP 2020</span> documentation skills) has three tabs:</p>
+      <ul style="margin-top:0.5rem">
+        <li><span class="highlight-text">Hypothesis</span> – Write your prediction before the experiment</li>
+        <li><span class="highlight-text">Observations</span> – Record what you saw during the experiment</li>
+        <li><span class="highlight-text">Conclusion</span> – Write what the experiment proved or disproved</li>
+      </ul>
+      <p style="margin-top:0.75rem">Press <span class="green-text">💾 SAVE</span> after writing. All entries are saved automatically on your device using LocalStorage and persist between sessions.</p>
+    </div>
+
+    <!-- Section 07 -->
+    <div class="manual-section">
+      <h3>07 — CONDUCTING SIMULATIONS (STEP-BY-STEP)</h3>
+      <p>Follow the <span class="highlight-text">Scientific Method</span> as per NEP 2020 &amp; NCF 2023:</p>
+      <div class="step-box"><div class="step-num">STEP 1 – OBSERVE</div>Read the Concept Panel. Note the formula and key principle.</div>
+      <div class="step-box"><div class="step-num">STEP 2 – HYPOTHESIZE</div>Open Notebook → Hypothesis tab. Write what you predict will happen when you change a variable.</div>
+      <div class="step-box"><div class="step-num">STEP 3 – EXPERIMENT</div>Adjust one variable at a time using sliders. Press START. Observe live readings.</div>
+      <div class="step-box"><div class="step-num">STEP 4 – RECORD</div>Open Notebook → Observations. Write down the readings for each variable setting.</div>
+      <div class="step-box"><div class="step-num">STEP 5 – CONCLUDE</div>Open Notebook → Conclusion. Compare results to your hypothesis. Write final analysis.</div>
+      <div class="step-box"><div class="step-num">STEP 6 – QUIZ</div>Answer the quiz at the bottom of each lab to test understanding.</div>
+    </div>
+
+    <!-- Section 08 -->
+    <div class="manual-section">
+      <h3>08 — QUIZZES &amp; ASSESSMENT</h3>
+      <p>Each lab includes a <span class="highlight-text">3-question quiz</span> aligned with PARAKH's competency-based assessment model.</p>
+      <ul style="margin-top:0.5rem">
+        <li>Questions test conceptual understanding, not rote memorization</li>
+        <li>Select an answer and receive instant feedback (green = correct, red = incorrect)</li>
+        <li>Scores are saved locally and tracked in the Notebook section</li>
+        <li>Teachers can ask students to screenshot their quiz scores</li>
+      </ul>
+    </div>
+
+    <!-- Section 09 -->
+    <div class="manual-section">
+      <h3>09 — TEACHER'S GUIDE</h3>
+      <p>This app is designed to support classroom science instruction aligned with NEP 2020:</p>
+      <ul style="margin-top:0.5rem">
+        <li><span class="highlight-text">Pre-class:</span> Assign specific experiments for students to explore at home</li>
+        <li><span class="highlight-text">In-class:</span> Use on projector/screen to demonstrate experiments before discussion</li>
+        <li><span class="highlight-text">Assessment:</span> Ask students to submit Notebook entries as lab reports</li>
+        <li><span class="highlight-text">Inquiry:</span> Pose questions like "What happens if you change gravity to Moon's value (1.6)?</li>
+        <li><span class="highlight-text">Offline use:</span> Students can use the app in areas with no internet</li>
+      </ul>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="manual-section">
+      <h3>10 — NEP 2020 &amp; NCF 2023 INTEGRATION</h3>
+      <p>Every feature is designed to reflect specific NEP 2020 and NCF 2023 goals:</p>
+      <ul style="margin-top:0.5rem">
+        <li>Simulations → Experiential learning (NEP 2020, Section 4.6)</li>
+        <li>Variable manipulation → Inquiry-based science (NCF 2023)</li>
+        <li>Lab Notebook → Scientific documentation skills (NEP 2020)</li>
+        <li>Quizzes → Competency-based assessment (PARAKH)</li>
+        <li>Concept panels → Conceptual understanding (NCERT pedagogy)</li>
+        <li>Offline PWA → Technology integration in low-infrastructure schools (NEP 2020)</li>
+      </ul>
+    </div>
+
+    <div class="author-footer">
+      <img src="author.jpg" alt="Mateen Yousuf"/>
+      <div class="author-footer-info">
+        <strong>Mateen Yousuf</strong><br/>
+        Teacher – School Education Department, J&amp;K<br/>
+        Concept Developer | Virtual Science Lab | NEP 2020 &amp; NCF 2023
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <div class="install-text">
+    <strong>📱 Install Virtual Science Lab</strong><br/>
+    Add to home screen for full offline access
+  </div>
+  <button class="install-btn" onclick="installPWA()">INSTALL</button>
+  <button class="install-dismiss" onclick="dismissInstall()">✕</button>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+
+  const tabs = document.querySelectorAll('.nav-tab');
+  const map = {home:0, physics:1, chemistry:2, biology:3, notebook:4, about:5, manual:6};
+  if (map[id] !== undefined) tabs[map[id]].classList.add('active');
+
+  window.scrollTo(0, 0);
+
+  // Initialize simulations when switching
+  if (id === 'physics') initPhysicsCanvas();
+  if (id === 'chemistry') initChemCanvas();
+  if (id === 'biology') initBioCanvas();
+  if (id === 'notebook') loadNotebook();
+}
+
+// ============================================================
+// PHYSICS SIMULATION – PENDULUM
+// ============================================================
+let physicsState = {
+  running: false,
+  animFrame: null,
+  time: 0,
+  experiment: 'pendulum',
+  L: 1.0,
+  g: 9.8,
+  amplitude: 30,
+  quizScore: 0
+};
+
+function initPhysicsCanvas() {
+  const canvas = document.getElementById('physicsCanvas');
+  canvas.width = canvas.offsetWidth || 500;
+  canvas.height = 300;
+  drawPendulum(physicsState.amplitude * Math.PI / 180);
+  loadPhysicsQuiz();
+}
+
+function drawPendulum(angle) {
+  const canvas = document.getElementById('physicsCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = 40;
+  const L = physicsState.L * 110;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  ctx.strokeStyle = 'rgba(0,212,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  const bx = cx + L * Math.sin(angle);
+  const by = cy + L * Math.cos(angle);
+
+  // Pivot
+  ctx.fillStyle = '#00d4ff';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#00d4ff';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // String
+  ctx.strokeStyle = 'rgba(0,212,255,0.6)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(bx, by);
+  ctx.stroke();
+
+  // Trail effect
+  ctx.strokeStyle = 'rgba(0,212,255,0.1)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 5; i++) {
+    const trailAngle = angle - i * 0.05 * Math.sin(physicsState.amplitude * Math.PI / 180);
+    const tx = cx + L * Math.sin(trailAngle);
+    const ty = cy + L * Math.cos(trailAngle);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(tx, ty);
+    ctx.stroke();
+  }
+
+  // Bob
+  const radius = 18;
+  const gradient = ctx.createRadialGradient(bx - 5, by - 5, 2, bx, by, radius);
+  gradient.addColorStop(0, '#ffffff');
+  gradient.addColorStop(0.4, '#00d4ff');
+  gradient.addColorStop(1, '#003344');
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(bx, by, radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,212,255,0.8)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Glow
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = '#00d4ff';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Period label
+  const T = (2 * Math.PI * Math.sqrt(physicsState.L / physicsState.g)).toFixed(3);
+  ctx.fillStyle = 'rgba(0,212,255,0.7)';
+  ctx.font = `12px 'Space Mono'`;
+  ctx.fillText(`T = ${T}s`, 10, H - 10);
+  ctx.fillText(`L = ${physicsState.L}m  g = ${physicsState.g}m/s²`, 10, H - 25);
+}
+
+function animatePendulum() {
+  if (!physicsState.running) return;
+  physicsState.time += 0.035;
+  const T = 2 * Math.PI * Math.sqrt(physicsState.L / physicsState.g);
+  const omega = 2 * Math.PI / T;
+  const amp = physicsState.amplitude * Math.PI / 180;
+  const angle = amp * Math.cos(omega * physicsState.time);
+  const velocity = (-amp * omega * Math.sin(omega * physicsState.time)).toFixed(3);
+
+  drawPendulum(angle);
+
+  // Update readings
+  document.getElementById('obs-period').textContent = T.toFixed(2);
+  document.getElementById('obs-frequency').textContent = (1/T).toFixed(2);
+  document.getElementById('obs-angle').textContent = (angle * 180 / Math.PI).toFixed(1);
+  document.getElementById('obs-velocity').textContent = Math.abs(velocity);
+
+  physicsState.animFrame = requestAnimationFrame(animatePendulum);
+}
+
+function startPhysicsSim() {
+  physicsState.running = true;
+  cancelAnimationFrame(physicsState.animFrame);
+  animatePendulum();
+  addLog('physics-log', `▶ Pendulum started | L=${physicsState.L}m | g=${physicsState.g}m/s²`);
+  updateProgress('physics', 40);
+}
+
+function pausePhysicsSim() {
+  physicsState.running = false;
+  cancelAnimationFrame(physicsState.animFrame);
+  addLog('physics-log', '⏸ Simulation paused');
+}
+
+function resetPhysicsSim() {
+  physicsState.running = false;
+  physicsState.time = 0;
+  cancelAnimationFrame(physicsState.animFrame);
+  drawPendulum(physicsState.amplitude * Math.PI / 180);
+  addLog('physics-log', '↺ Simulation reset');
+}
+
+function updatePhysicsCtrl() {
+  physicsState.L = parseFloat(document.getElementById('ctrl-length').value);
+  physicsState.g = parseFloat(document.getElementById('ctrl-gravity').value);
+  physicsState.amplitude = parseFloat(document.getElementById('ctrl-amplitude').value);
+
+  document.getElementById('length-val').textContent = physicsState.L.toFixed(1);
+  document.getElementById('gravity-val').textContent = physicsState.g.toFixed(1);
+  document.getElementById('amplitude-val').textContent = physicsState.amplitude;
+
+  const T = 2 * Math.PI * Math.sqrt(physicsState.L / physicsState.g);
+  document.getElementById('obs-period').textContent = T.toFixed(2);
+  document.getElementById('obs-frequency').textContent = (1/T).toFixed(2);
+
+  if (!physicsState.running) drawPendulum(physicsState.amplitude * Math.PI / 180);
+}
+
+function loadPhysicsExp(exp, btn) {
+  document.querySelectorAll('#sec-physics .exp-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  physicsState.experiment = exp;
+  physicsState.running = false;
+  cancelAnimationFrame(physicsState.animFrame);
+
+  const concepts = {
+    pendulum: {
+      title: '🕰️ Concept – Simple Pendulum',
+      text: 'A simple pendulum exhibits <span class="highlight-text">Simple Harmonic Motion (SHM)</span>. Its period depends on the length of the string and gravitational acceleration.',
+      formula: 'T = 2π√(L/g)',
+      extra: 'As per <span class="green-text">NCF 2023</span>, students learn by manipulating variables — change length or gravity and observe how the period changes as emphasized in <span class="highlight-text">NEP 2020</span>.'
+    },
+    incline: {
+      title: '📐 Concept – Inclined Plane',
+      text: 'On an inclined plane, the component of gravity along the surface causes acceleration. <span class="highlight-text">Newton\'s Second Law</span> governs the motion.',
+      formula: 'a = g·sin(θ) | F = mg·sin(θ)',
+      extra: 'As per <span class="green-text">NCF 2023</span>, students explore how angle affects acceleration — a key inquiry activity aligned with <span class="highlight-text">NEP 2020</span> experiential science.'
+    },
+    optics: {
+      title: '🔦 Concept – Light Refraction',
+      text: 'When light passes from one medium to another, it bends. <span class="highlight-text">Snell\'s Law</span> defines the relationship between angles and refractive indices.',
+      formula: 'n₁·sin(θ₁) = n₂·sin(θ₂)',
+      extra: 'Students can change the angle of incidence and medium and observe how refraction changes. This is core inquiry learning per <span class="green-text">NCF 2023</span>.'
+    },
+    circuit: {
+      title: '💡 Concept – Electric Circuit',
+      text: '<span class="highlight-text">Ohm\'s Law</span> states that current through a conductor is proportional to voltage and inversely proportional to resistance.',
+      formula: 'V = I × R  |  P = V × I',
+      extra: 'Change voltage and resistance using sliders and observe current and power changes in real time. Aligned with <span class="highlight-text">NEP 2020</span> practical science outcomes.'
+    }
+  };
+  const c = concepts[exp];
+  document.getElementById('physics-concept').innerHTML = `
+    <div class="concept-title">${c.title}</div>
+    <p class="concept-text">${c.text}</p>
+    <div class="concept-formula">${c.formula}</div>
+    <p class="concept-text">${c.extra}</p>
+  `;
+
+  if (exp === 'incline') drawIncline();
+  else if (exp === 'optics') drawOptics();
+  else if (exp === 'circuit') drawCircuit();
+  else drawPendulum(physicsState.amplitude * Math.PI / 180);
+}
+
+function drawIncline() {
+  const canvas = document.getElementById('physicsCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const theta = (physicsState.amplitude || 30) * Math.PI / 180;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#020408';
+  ctx.fillRect(0, 0, W, H);
+
+  const ox = 50, oy = H - 50;
+  const len = 250;
+  const ex = ox + len * Math.cos(theta);
+  const ey = oy - len * Math.sin(theta);
+
+  // Incline
+  ctx.strokeStyle = '#00d4ff';
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 10; ctx.shadowColor = '#00d4ff';
+  ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, ey); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, oy); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Angle arc
+  ctx.strokeStyle = 'rgba(255,215,0,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(ox, oy, 50, -theta, 0);
+  ctx.stroke();
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '13px Space Mono';
+  ctx.fillText(`θ=${(physicsState.amplitude||30)}°`, ox + 55, oy - 12);
+
+  // Block on incline
+  const bpos = 0.5;
+  const bx = ox + bpos * len * Math.cos(theta);
+  const by = oy - bpos * len * Math.sin(theta);
+  ctx.save();
+  ctx.translate(bx, by);
+  ctx.rotate(-theta);
+  ctx.fillStyle = '#7c3aed';
+  ctx.shadowBlur = 15; ctx.shadowColor = '#7c3aed';
+  ctx.fillRect(-20, -20, 40, 30);
+  ctx.shadowBlur = 0;
+  ctx.restore();
+
+  // Labels
+  const a = (physicsState.g * Math.sin(theta)).toFixed(2);
+  ctx.fillStyle = 'rgba(0,255,136,0.8)';
+  ctx.font = '11px Space Mono';
+  ctx.fillText(`a = g·sin(θ) = ${a} m/s²`, 10, 20);
+}
+
+function drawOptics() {
+  const canvas = document.getElementById('physicsCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W/2, cy = H/2;
+  const n1 = 1.0, n2 = 1.5;
+  const theta1 = (physicsState.amplitude || 45) * Math.PI / 180;
+  const theta2 = Math.asin(n1 * Math.sin(theta1) / n2);
+
+  // Media boundary
+  ctx.fillStyle = 'rgba(0,50,100,0.2)';
+  ctx.fillRect(0, cy, W, cy);
+  ctx.strokeStyle = 'rgba(0,212,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Normal line
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Incident ray
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 8; ctx.shadowColor = '#ffd700';
+  ctx.beginPath();
+  ctx.moveTo(cx - 120 * Math.sin(theta1), cy - 120 * Math.cos(theta1));
+  ctx.lineTo(cx, cy);
+  ctx.stroke();
+
+  // Refracted ray
+  ctx.strokeStyle = '#00ff88';
+  ctx.shadowColor = '#00ff88';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + 120 * Math.sin(theta2), cy + 120 * Math.cos(theta2));
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '11px Space Mono';
+  ctx.fillText(`θ₁ = ${(theta1*180/Math.PI).toFixed(1)}° (air)`, 10, 20);
+  ctx.fillStyle = '#00ff88';
+  ctx.fillText(`θ₂ = ${(theta2*180/Math.PI).toFixed(1)}° (glass)`, 10, 36);
+  ctx.fillStyle = 'rgba(0,212,255,0.6)';
+  ctx.fillText('n=1.0 (Air)', W-90, cy-10);
+  ctx.fillText('n=1.5 (Glass)', W-100, cy+20);
+}
+
+function drawCircuit() {
+  const canvas = document.getElementById('physicsCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const V = physicsState.L * 6; // reuse length slider as voltage
+  const R = physicsState.g * 2; // reuse gravity slider as resistance
+  const I = V / R;
+  const P = V * I;
+
+  // Circuit lines
+  ctx.strokeStyle = '#00d4ff';
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 8; ctx.shadowColor = '#00d4ff';
+  const l=80, t=60, r=W-80, b=H-60;
+  ctx.strokeRect(l, t, r-l, b-t);
+  ctx.shadowBlur = 0;
+
+  // Flowing electrons
+  const eCount = Math.min(Math.round(I * 3), 20);
+  const elapsed = physicsState.time || 0;
+  for (let i = 0; i < eCount; i++) {
+    const phase = (elapsed * 0.5 + i / eCount) % 1;
+    const perimeter = 2 * ((r-l) + (b-t));
+    const pos = phase * perimeter;
+    let ex, ey;
+    if (pos < (r-l)) { ex = l + pos; ey = t; }
+    else if (pos < (r-l)+(b-t)) { ex = r; ey = t + (pos-(r-l)); }
+    else if (pos < 2*(r-l)+(b-t)) { ex = r - (pos - (r-l) - (b-t)); ey = b; }
+    else { ex = l; ey = b - (pos - 2*(r-l) - (b-t)); }
+
+    ctx.fillStyle = '#ffd700';
+    ctx.shadowBlur = 6; ctx.shadowColor = '#ffd700';
+    ctx.beginPath(); ctx.arc(ex, ey, 4, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+
+  // Battery symbol
+  ctx.fillStyle = '#ff6b35';
+  ctx.fillRect(l-5, (t+b)/2-20, 10, 40);
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = 'bold 10px Space Mono';
+  ctx.fillText('+', l-3, (t+b)/2 - 5);
+  ctx.fillText('−', l-3, (t+b)/2 + 15);
+
+  // Bulb
+  ctx.fillStyle = I > 1 ? `rgba(255,215,0,${Math.min(I/5, 1)})` : 'rgba(100,100,100,0.5)';
+  ctx.shadowBlur = I > 1 ? 20 : 0;
+  ctx.shadowColor = '#ffd700';
+  ctx.beginPath();
+  ctx.arc((l+r)/2, t, 18, 0, Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Readings
+  ctx.fillStyle = 'rgba(0,212,255,0.8)';
+  ctx.font = '11px Space Mono';
+  ctx.fillText(`V = ${V.toFixed(1)} V`, 10, 20);
+  ctx.fillText(`R = ${R.toFixed(1)} Ω`, 10, 36);
+  ctx.fillStyle = '#ffd700';
+  ctx.fillText(`I = ${I.toFixed(2)} A`, 10, 52);
+  ctx.fillStyle = '#00ff88';
+  ctx.fillText(`P = ${P.toFixed(2)} W`, 10, 68);
+}
+
+// ============================================================
+// CHEMISTRY SIMULATION
+// ============================================================
+let chemState = {
+  running: false,
+  animFrame: null,
+  time: 0,
+  experiment: 'acidbase',
+  acid: 50,
+  base: 50,
+  temp: 25,
+  quizScore: 0
+};
+
+function initChemCanvas() {
+  const canvas = document.getElementById('chemCanvas');
+  canvas.width = canvas.offsetWidth || 500;
+  canvas.height = 300;
+  drawChemScene();
+  loadChemQuiz();
+}
+
+function drawChemScene() {
+  const canvas = document.getElementById('chemCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const pH = calcPH();
+  const color = getpHColor(pH);
+  const t = chemState.time;
+
+  // Background
+  ctx.fillStyle = '#020408';
+  ctx.fillRect(0, 0, W, H);
+
+  // Beaker 1 (acid)
+  drawBeaker(ctx, W*0.2, H*0.3, 80, 140, `rgba(255,80,80,${0.3 + chemState.acid/300})`, '🔴', `HCl\n${chemState.acid}mL`);
+
+  // Beaker 2 (base)
+  drawBeaker(ctx, W*0.5, H*0.3, 80, 140, `rgba(80,80,255,${0.3 + chemState.base/300})`, '🔵', `NaOH\n${chemState.base}mL`);
+
+  // Result beaker
+  const liquidH = chemState.running ? Math.min((chemState.acid + chemState.base) * 0.7, 100) : 60;
+  drawBeaker(ctx, W*0.78, H*0.3, 90, 150, color, '🧪', `pH: ${pH.toFixed(1)}`);
+
+  // Bubbles when running
+  if (chemState.running && Math.abs(chemState.acid - chemState.base) < 30) {
+    for (let i = 0; i < 8; i++) {
+      const bx = W*0.78 + (Math.sin(t*2 + i) * 20);
+      const by = H*0.7 - (((t*30 + i*20) % 80));
+      const alpha = 1 - ((t*30 + i*20) % 80) / 80;
+      ctx.fillStyle = `rgba(255,255,255,${alpha * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(bx, by, 4, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  // pH scale bar
+  drawPHBar(ctx, 10, H - 30, W - 20, 12, pH);
+}
+
+function drawBeaker(ctx, x, y, w, h, color, emoji, label) {
+  // Glass outline
+  ctx.strokeStyle = 'rgba(0,212,255,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x - w/2, y);
+  ctx.lineTo(x - w/2, y + h);
+  ctx.lineTo(x + w/2, y + h);
+  ctx.lineTo(x + w/2, y);
+  ctx.stroke();
+
+  // Liquid
+  const liqH = Math.max(h * 0.4, 30);
+  ctx.fillStyle = color;
+  ctx.fillRect(x - w/2 + 2, y + h - liqH, w - 4, liqH);
+
+  // Label
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '11px Space Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(label.split('\n')[0], x, y - 8);
+  if (label.split('\n')[1]) ctx.fillText(label.split('\n')[1], x, y + h + 16);
+  ctx.textAlign = 'left';
+}
+
+function drawPHBar(ctx, x, y, w, h, pH) {
+  const gradient = ctx.createLinearGradient(x, y, x + w, y);
+  gradient.addColorStop(0, '#ff0000');
+  gradient.addColorStop(0.5, '#00ff00');
+  gradient.addColorStop(1, '#0000ff');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(x, y, w, h);
+
+  // Indicator
+  const pos = (pH / 14) * w;
+  ctx.fillStyle = '#fff';
+  ctx.shadowBlur = 8; ctx.shadowColor = '#fff';
+  ctx.fillRect(x + pos - 2, y - 3, 4, h + 6);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '9px Space Mono';
+  for (let i = 0; i <= 14; i += 2) {
+    ctx.fillText(i, x + (i/14)*w - 3, y - 5);
+  }
+}
+
+function calcPH() {
+  const ratio = chemState.base / (chemState.acid + chemState.base || 1);
+  const pH = ratio * 14;
+  return Math.max(0, Math.min(14, pH));
+}
+
+function getpHColor(pH) {
+  const r = pH < 7 ? 255 : Math.round(255 * (14 - pH) / 7);
+  const g = pH === 7 ? 200 : Math.round(200 * (1 - Math.abs(pH - 7) / 7));
+  const b = pH > 7 ? 255 : Math.round(255 * (pH) / 7);
+  return `rgba(${r},${g},${b},0.5)`;
+}
+
+function animateChem() {
+  if (!chemState.running) return;
+  chemState.time += 0.03;
+  drawChemScene();
+  const pH = calcPH();
+  const phIndicator = pH < 4 ? '🔴' : pH < 8 ? '🟢' : '🔵';
+  document.getElementById('obs-ph').textContent = pH.toFixed(1);
+  document.getElementById('obs-color').textContent = phIndicator;
+  document.getElementById('obs-reaction').textContent = pH < 7 ? 'ACIDIC' : pH > 7 ? 'BASIC' : 'NEUTRAL';
+  document.getElementById('obs-energy').textContent = (Math.abs(chemState.acid - chemState.base) * 0.57).toFixed(1);
+  chemState.animFrame = requestAnimationFrame(animateChem);
+}
+
+function startChemSim() {
+  chemState.running = true;
+  cancelAnimationFrame(chemState.animFrame);
+  animateChem();
+  addLog('chem-log', `▶ Reaction started | Acid=${chemState.acid}mL | Base=${chemState.base}mL | T=${chemState.temp}°C`);
+  updateProgress('chemistry', 40);
+}
+function pauseChemSim() { chemState.running = false; cancelAnimationFrame(chemState.animFrame); addLog('chem-log', '⏸ Reaction paused'); }
+function resetChemSim() { chemState.running = false; chemState.time = 0; cancelAnimationFrame(chemState.animFrame); drawChemScene(); addLog('chem-log', '↺ Reset'); }
+
+function updateChemCtrl() {
+  chemState.acid = parseInt(document.getElementById('ctrl-acid').value);
+  chemState.base = parseInt(document.getElementById('ctrl-base').value);
+  chemState.temp = parseInt(document.getElementById('ctrl-temp').value);
+  document.getElementById('acid-val').textContent = chemState.acid;
+  document.getElementById('base-val').textContent = chemState.base;
+  document.getElementById('temp-val').textContent = chemState.temp;
+  const pH = calcPH();
+  document.getElementById('obs-ph').textContent = pH.toFixed(1);
+  if (!chemState.running) drawChemScene();
+}
+
+function loadChemExp(exp, btn) {
+  document.querySelectorAll('#sec-chemistry .exp-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  chemState.experiment = exp;
+  const concepts = {
+    acidbase: { title: '🔴 Concept – Acid-Base Reaction', text: 'When an acid and base react, they undergo <span class="highlight-text">neutralization</span>, producing salt and water. pH ranges from 0–14.', formula: 'HCl + NaOH → NaCl + H₂O  |  pH: 0–14' },
+    electrolysis: { title: '⚡ Concept – Electrolysis', text: '<span class="highlight-text">Electrolysis</span> uses electrical energy to drive non-spontaneous chemical reactions. Water splits into H₂ and O₂.', formula: '2H₂O → 2H₂ + O₂  (electrolysis)' },
+    combustion: { title: '🔥 Concept – Combustion', text: '<span class="highlight-text">Combustion</span> is a rapid chemical reaction with oxygen producing heat and light. Complete combustion produces CO₂ and H₂O.', formula: 'CH₄ + 2O₂ → CO₂ + 2H₂O + Heat' },
+    titration: { title: '🧫 Concept – Titration', text: '<span class="highlight-text">Titration</span> is a laboratory technique to determine the concentration of a solution using a standard solution.', formula: 'M₁V₁ = M₂V₂  (at equivalence point)' }
+  };
+  const c = concepts[exp];
+  document.getElementById('chem-concept').innerHTML = `
+    <div class="concept-title">${c.title}</div>
+    <p class="concept-text">${c.text}</p>
+    <div class="concept-formula">${c.formula}</div>
+    <p class="concept-text">Aligned with <span class="green-text">NCF 2023</span> and <span class="highlight-text">NEP 2020</span> experiential learning principles.</p>
+  `;
+  drawChemScene();
+}
+
+// ============================================================
+// BIOLOGY SIMULATION
+// ============================================================
+let bioState = {
+  running: false,
+  animFrame: null,
+  time: 0,
+  experiment: 'cell',
+  mag: 3,
+  focus: 50,
+  stain: 50
+};
+
+function initBioCanvas() {
+  const canvas = document.getElementById('bioCanvas');
+  canvas.width = canvas.offsetWidth || 500;
+  canvas.height = 300;
+  drawCellScene();
+  loadBioQuiz();
+}
+
+function drawCellScene() {
+  const canvas = document.getElementById('bioCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const focus = bioState.focus / 100;
+  const stain = bioState.stain / 100;
+  const mag = bioState.mag;
+  const t = bioState.time;
+
+  // Background – microscope view
+  const gradient = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.min(W, H)/2);
+  gradient.addColorStop(0, `rgba(0,${Math.round(30 + stain*40)},${Math.round(20 + stain*30)},1)`);
+  gradient.addColorStop(0.8, 'rgba(0,15,10,1)');
+  gradient.addColorStop(1, '#000');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
+
+  // Blur effect for focus
+  const blurAlpha = Math.abs(focus - 0.5) * 0.8;
+
+  // Draw cells
+  const cellCount = Math.max(1, Math.round(20 / mag));
+  const cellSize = 30 * (mag / 3);
+
+  for (let i = 0; i < cellCount; i++) {
+    const cx = 80 + (i % 4) * (W - 160) / 3 + Math.sin(t + i) * 2;
+    const cy = 80 + Math.floor(i / 4) * (H - 160) / 2 + Math.cos(t + i) * 2;
+
+    // Cell wall (plant)
+    ctx.strokeStyle = `rgba(0,${Math.round(180 + stain*75)},${Math.round(50+stain*50)},${0.6 + focus * 0.3})`;
+    ctx.lineWidth = 2 + mag * 0.3;
+    ctx.shadowBlur = 5 * focus;
+    ctx.shadowColor = '#00ff88';
+    ctx.beginPath();
+    ctx.roundRect(cx - cellSize, cy - cellSize*0.8, cellSize*2, cellSize*1.6, 6);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Nucleus
+    if (mag > 2) {
+      ctx.fillStyle = `rgba(255,${Math.round(100+stain*100)},0,${0.5 + focus*0.4})`;
+      ctx.shadowBlur = 3;
+      ctx.shadowColor = '#ff6b00';
+      ctx.beginPath();
+      ctx.arc(cx, cy, cellSize * 0.25, 0, Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Chloroplasts
+    if (mag > 4) {
+      for (let c = 0; c < 3; c++) {
+        ctx.fillStyle = `rgba(0,${Math.round(200+stain*55)},0,${0.6})`;
+        ctx.beginPath();
+        ctx.ellipse(cx + (c-1)*cellSize*0.4, cy + cellSize*0.3, 6, 4, 0, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // Labels
+  const magLabels = ['40x','100x','200x','400x','600x','800x','1000x','1200x','1500x','2000x'];
+  ctx.fillStyle = 'rgba(0,212,255,0.7)';
+  ctx.font = '11px Space Mono';
+  ctx.fillText(magLabels[mag-1] || `${mag*100}x`, 10, H-10);
+  ctx.fillText(`Focus: ${bioState.focus}%`, 80, H-10);
+}
+
+function animateBio() {
+  if (!bioState.running) return;
+  bioState.time += 0.02;
+  drawCellScene();
+
+  const mag = bioState.mag;
+  document.getElementById('obs-cells').textContent = Math.max(1, Math.round(16 / mag));
+  document.getElementById('obs-organelles').textContent = mag > 4 ? '8+' : mag > 2 ? '3' : '1';
+  const magLabels = ['40x','100x','200x','400x','600x','800x','1000x','1200x','1500x','2000x'];
+  document.getElementById('obs-zoom').textContent = magLabels[mag-1] || `${mag*100}x`;
+  document.getElementById('obs-clarity').textContent = bioState.focus > 40 && bioState.focus < 70 ? 'Excellent' : bioState.focus > 25 && bioState.focus < 85 ? 'Good' : 'Blurry';
+
+  bioState.animFrame = requestAnimationFrame(animateBio);
+}
+
+function startBioSim() {
+  bioState.running = true;
+  cancelAnimationFrame(bioState.animFrame);
+  animateBio();
+  addLog('bio-log', `▶ Microscope active | Mag=${bioState.mag*100}x | Focus=${bioState.focus}%`);
+  updateProgress('biology', 40);
+}
+function pauseBioSim() { bioState.running = false; cancelAnimationFrame(bioState.animFrame); addLog('bio-log', '⏸ Paused'); }
+function resetBioSim() { bioState.running = false; bioState.time = 0; cancelAnimationFrame(bioState.animFrame); drawCellScene(); }
+
+function updateBioCtrl() {
+  bioState.mag = parseInt(document.getElementById('ctrl-mag').value);
+  bioState.focus = parseInt(document.getElementById('ctrl-focus').value);
+  bioState.stain = parseInt(document.getElementById('ctrl-stain').value);
+  const magLabels = ['40x','100x','200x','400x','600x','800x','1000x','1200x','1500x','2000x'];
+  document.getElementById('mag-val').textContent = magLabels[bioState.mag-1] || `${bioState.mag*100}x`;
+  document.getElementById('focus-val').textContent = bioState.focus + '%';
+  document.getElementById('stain-val').textContent = bioState.stain + '%';
+  document.getElementById('obs-zoom').textContent = magLabels[bioState.mag-1];
+  if (!bioState.running) drawCellScene();
+}
+
+function loadBioExp(exp, btn) {
+  document.querySelectorAll('#sec-biology .exp-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  bioState.experiment = exp;
+  const concepts = {
+    cell: { title: '🦠 Concept – Cell Structure', text: 'The <span class="highlight-text">cell is the fundamental unit of life</span>. Plant cells have a cell wall, chloroplasts, and vacuoles.', formula: 'Plant: Cell Wall + Chloroplast | Animal: Lysosome + Centriole' },
+    photosynthesis: { title: '🌿 Concept – Photosynthesis', text: '<span class="highlight-text">Photosynthesis</span> converts sunlight, CO₂ and water into glucose and oxygen in chloroplasts.', formula: '6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂' },
+    osmosis: { title: '💧 Concept – Osmosis', text: '<span class="highlight-text">Osmosis</span> is the movement of water molecules through a semi-permeable membrane from low to high solute concentration.', formula: 'Water moves: low concentration → high concentration' },
+    enzyme: { title: '🔬 Concept – Enzyme Activity', text: '<span class="highlight-text">Enzymes</span> are biological catalysts that speed up chemical reactions. They work best at specific pH and temperature.', formula: 'Enzyme + Substrate → Enzyme-Substrate Complex → Products' }
+  };
+  const c = concepts[exp];
+  document.getElementById('bio-concept').innerHTML = `
+    <div class="concept-title">${c.title}</div>
+    <p class="concept-text">${c.text}</p>
+    <div class="concept-formula">${c.formula}</div>
+    <p class="concept-text">Aligned with <span class="green-text">NCF 2023</span> biology curriculum and <span class="highlight-text">NEP 2020</span> inquiry learning.</p>
+  `;
+  drawCellScene();
+}
+
+// ============================================================
+// QUIZ SYSTEM
+// ============================================================
+const physicsQuizData = [
+  { q: 'If the length of a pendulum is increased 4 times, what happens to its time period?', opts: ['Doubles', 'Halves', 'Quadruples', 'Remains same'], ans: 0 },
+  { q: 'According to Ohm\'s Law, if resistance doubles and voltage remains constant, current will:', opts: ['Double', 'Halve', 'Stay same', 'Quadruple'], ans: 1 },
+  { q: 'When light travels from air to glass, it:', opts: ['Speeds up and bends away', 'Slows down and bends toward normal', 'Speeds up and bends toward normal', 'Slows down and bends away'], ans: 1 }
+];
+const chemQuizData = [
+  { q: 'What is the pH of a neutral solution?', opts: ['0', '7', '14', '1'], ans: 1 },
+  { q: 'In neutralization, HCl + NaOH produces:', opts: ['H₂O only', 'NaCl + H₂O', 'HNa + ClOH', 'H₂ + Cl₂'], ans: 1 },
+  { q: 'Which color does litmus show in acidic solution?', opts: ['Blue', 'Green', 'Red', 'Yellow'], ans: 2 }
+];
+const bioQuizData = [
+  { q: 'Which organelle is called the "powerhouse of the cell"?', opts: ['Nucleus', 'Mitochondria', 'Ribosome', 'Golgi body'], ans: 1 },
+  { q: 'Photosynthesis occurs in which organelle?', opts: ['Mitochondria', 'Nucleus', 'Chloroplast', 'Lysosome'], ans: 2 },
+  { q: 'Cell wall is present in which type of cell?', opts: ['Animal cells only', 'Plant cells only', 'Both plant and animal', 'Neither'], ans: 1 }
+];
+
+let physQuizState = {current:0, score:0};
+let chemQuizState = {current:0, score:0};
+let bioQuizState = {current:0, score:0};
+
+function renderQuiz(data, state, containerId, scoreId) {
+  const container = document.getElementById(containerId);
+  if (state.current >= data.length) {
+    container.innerHTML = `<div style="text-align:center;padding:1rem">
+      <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--accent-cyan)">${state.score}/${data.length}</div>
+      <div style="color:var(--text-secondary);font-size:0.82rem;margin-top:0.5rem">${state.score === data.length ? '🏆 Perfect Score!' : state.score >= 2 ? '✅ Good work!' : '📚 Keep studying!'}</div>
+      <button onclick="resetQuiz('${containerId}','${scoreId}')" style="margin-top:1rem;padding:0.5rem 1.25rem;background:rgba(0,212,255,0.1);border:1px solid var(--accent-cyan);color:var(--accent-cyan);border-radius:6px;cursor:pointer;font-family:var(--font-display);font-size:0.75rem;letter-spacing:1px">↺ RETRY</button>
+    </div>`;
+    if(state.score === data.length) awardBadge('scientist');
+    saveScore(containerId, state.score);
+    updateProgress(containerId.includes('phys') ? 'physics' : containerId.includes('chem') ? 'chemistry' : 'biology', 100);
+    return;
+  }
+  const q = data[state.current];
+  container.innerHTML = `
+    <div class="quiz-question">${state.current+1}. ${q.q}</div>
+    <div class="quiz-options">
+      ${q.opts.map((o,i) => `<button class="quiz-option" onclick="answerQuiz(${i},'${containerId}','${scoreId}')">${o}</button>`).join('')}
+    </div>
+  `;
+}
+
+function answerQuiz(idx, containerId, scoreId) {
+  const isPhys = containerId.includes('phys');
+  const isChem = containerId.includes('chem');
+  const data = isPhys ? physicsQuizData : isChem ? chemQuizData : bioQuizData;
+  const state = isPhys ? physQuizState : isChem ? chemQuizState : bioQuizState;
+  const correct = data[state.current].ans;
+
+  const opts = document.querySelectorAll(`#${containerId} .quiz-option`);
+  opts.forEach((o,i) => {
+    o.disabled = true;
+    if (i === correct) o.classList.add('correct');
+    else if (i === idx) o.classList.add('wrong');
+  });
+  if (idx === correct) {
+    state.score++;
+    document.getElementById(scoreId).textContent = state.score;
+  }
+  setTimeout(() => {
+    state.current++;
+    renderQuiz(data, state, containerId, scoreId);
+  }, 1200);
+}
+
+function resetQuiz(containerId, scoreId) {
+  const isPhys = containerId.includes('phys');
+  const isChem = containerId.includes('chem');
+  const data = isPhys ? physicsQuizData : isChem ? chemQuizData : bioQuizData;
+  const state = isPhys ? physQuizState : isChem ? chemQuizState : bioQuizState;
+  state.current = 0; state.score = 0;
+  document.getElementById(scoreId).textContent = 0;
+  renderQuiz(data, state, containerId, scoreId);
+}
+
+function loadPhysicsQuiz() { physQuizState = {current:0,score:0}; renderQuiz(physicsQuizData, physQuizState, 'phys-quiz-area', 'phys-score'); }
+function loadChemQuiz() { chemQuizState = {current:0,score:0}; renderQuiz(chemQuizData, chemQuizState, 'chem-quiz-area', 'chem-score'); }
+function loadBioQuiz() { bioQuizState = {current:0,score:0}; renderQuiz(bioQuizData, bioQuizState, 'bio-quiz-area', 'bio-score'); }
+
+// ============================================================
+// NOTEBOOK
+// ============================================================
+function switchNBTab(tab, btn) {
+  document.querySelectorAll('.nb-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('nb-hypothesis').classList.add('hidden');
+  document.getElementById('nb-observations').classList.add('hidden');
+  document.getElementById('nb-conclusion').classList.add('hidden');
+  document.getElementById('nb-' + tab).classList.remove('hidden');
+}
+
+function saveNBEntry(type) {
+  const val = document.getElementById(type + '-input').value.trim();
+  if (!val) return;
+  const entries = JSON.parse(localStorage.getItem('scilab-notebook') || '{}');
+  entries[type] = { text: val, date: new Date().toLocaleDateString() };
+  localStorage.setItem('scilab-notebook', JSON.stringify(entries));
+  document.getElementById(type + '-input').value = '';
+  addLog('phys-log', ''); // just a dummy call
+  displaySavedEntries();
+  awardBadge('writer');
+}
+
+function displaySavedEntries() {
+  const entries = JSON.parse(localStorage.getItem('scilab-notebook') || '{}');
+  const list = document.getElementById('entries-list');
+  if (Object.keys(entries).length === 0) {
+    list.innerHTML = 'No saved entries yet. Start writing in the notebook above.';
+    return;
+  }
+  list.innerHTML = Object.entries(entries).map(([k,v]) => `
+    <div style="background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:0.5rem">
+      <div style="font-family:var(--font-display);font-size:0.72rem;color:var(--accent-cyan);margin-bottom:0.3rem">${k.toUpperCase()} — ${v.date}</div>
+      <div style="font-size:0.82rem;color:var(--text-secondary)">${v.text}</div>
+    </div>
+  `).join('');
+}
+
+function loadNotebook() {
+  displaySavedEntries();
+  loadProgress();
+  renderBadges();
+  const entries = JSON.parse(localStorage.getItem('scilab-notebook') || '{}');
+  if (entries.hypothesis) document.getElementById('hypothesis-input').value = entries.hypothesis.text || '';
+  if (entries.observations) document.getElementById('observations-input').value = entries.observations.text || '';
+  if (entries.conclusion) document.getElementById('conclusion-input').value = entries.conclusion.text || '';
+}
+
+// ============================================================
+// PROGRESS & BADGES
+// ============================================================
+function updateProgress(lab, pct) {
+  const stored = JSON.parse(localStorage.getItem('scilab-progress') || '{}');
+  stored[lab] = Math.max(stored[lab] || 0, pct);
+  localStorage.setItem('scilab-progress', JSON.stringify(stored));
+}
+
+function loadProgress() {
+  const stored = JSON.parse(localStorage.getItem('scilab-progress') || '{}');
+  ['physics','chemistry','biology'].forEach(lab => {
+    const el = document.getElementById('prog-' + lab);
+    if (el) el.style.width = (stored[lab] || 0) + '%';
+  });
+}
+
+const BADGES = [
+  { id:'scientist', icon:'🏆', name:'Young Scientist', condition: 'Perfect Quiz Score' },
+  { id:'writer', icon:'📝', name:'Lab Recorder', condition: 'Saved Notebook Entry' },
+  { id:'explorer', icon:'🔭', name:'Science Explorer', condition: 'Used All 3 Labs' },
+  { id:'master', icon:'⭐', name:'Experiment Master', condition: 'Completed All Quizzes' }
+];
+
+function awardBadge(id) {
+  const badges = JSON.parse(localStorage.getItem('scilab-badges') || '[]');
+  if (!badges.includes(id)) {
+    badges.push(id);
+    localStorage.setItem('scilab-badges', JSON.stringify(badges));
+  }
+}
+
+function renderBadges() {
+  const earned = JSON.parse(localStorage.getItem('scilab-badges') || '[]');
+  const area = document.getElementById('badges-area');
+  if (!area) return;
+  area.innerHTML = BADGES.map(b => `
+    <div class="badge ${earned.includes(b.id) ? 'earned' : ''}">
+      <span class="badge-icon">${b.icon}</span>
+      <div class="badge-name">${b.name}</div>
+    </div>
+  `).join('');
+}
+
+function saveScore(lab, score) {
+  const scores = JSON.parse(localStorage.getItem('scilab-scores') || '{}');
+  scores[lab] = score;
+  localStorage.setItem('scilab-scores', JSON.stringify(scores));
+  const allDone = ['phys-quiz-area','chem-quiz-area','bio-quiz-area'].every(l => scores[l] !== undefined);
+  if (allDone) awardBadge('master');
+  awardBadge('explorer');
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function addLog(logId, msg) {
+  if (!msg) return;
+  const log = document.getElementById(logId);
+  if (!log) return;
+  const line = document.createElement('span');
+  const time = new Date().toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  line.innerHTML = `[${time}] ${msg}<br/>`;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => document.getElementById('installBanner').classList.add('visible'), 3000);
+});
+
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      dismissInstall();
+    });
+  }
+}
+
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('visible');
+}
+
+// ============================================================
+// SERVICE WORKER REGISTRATION
+// ============================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(() => console.log('[SW] Registered'))
+      .catch(err => console.log('[SW] Error:', err));
+  });
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Load saved notebook data
+  const entries = JSON.parse(localStorage.getItem('scilab-notebook') || '{}');
+  if (entries.hypothesis) document.getElementById('hypothesis-input').value = entries.hypothesis.text || '';
+});
+
+// Handle canvas resize
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.section.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'sec-physics') initPhysicsCanvas();
+  if (id === 'sec-chemistry') initChemCanvas();
+  if (id === 'sec-biology') initBioCanvas();
+});
+</script>
+</body>
+</html>

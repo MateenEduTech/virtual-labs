@@ -1,0 +1,41 @@
+{
+  "name": "JKBOSE Virtual Science Lab",
+  "short_name": "VirtualLab",
+  "description": "Offline Virtual Science Simulation Lab for Classes 8–10 by Dr. Mateen Yousuf",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#1a6ef5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='24' fill='%230a0e1a'/%3E%3Ccircle cx='96' cy='80' r='36' fill='none' stroke='%231a6ef5' stroke-width='6'/%3E%3Cline x1='96' y1='44' x2='96' y2='32' stroke='%231a6ef5' stroke-width='6'/%3E%3Cline x1='96' y1='128' x2='96' y2='140' stroke='%231a6ef5' stroke-width='6'/%3E%3Cline x1='60' y1='80' x2='48' y2='80' stroke='%231a6ef5' stroke-width='6'/%3E%3Cline x1='144' y1='80' x2='132' y2='80' stroke='%231a6ef5' stroke-width='6'/%3E%3Ccircle cx='96' cy='80' r='12' fill='%231a6ef5'/%3E%3Ctext x='96' y='165' text-anchor='middle' fill='%23ffffff' font-size='18' font-family='Arial'%3EVirtual Lab%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='64' fill='%230a0e1a'/%3E%3Ccircle cx='256' cy='210' r='96' fill='none' stroke='%231a6ef5' stroke-width='16'/%3E%3Cline x1='256' y1='114' x2='256' y2='80' stroke='%231a6ef5' stroke-width='16'/%3E%3Cline x1='256' y1='346' x2='256' y2='380' stroke='%231a6ef5' stroke-width='16'/%3E%3Cline x1='160' y1='210' x2='126' y2='210' stroke='%231a6ef5' stroke-width='16'/%3E%3Cline x1='386' y1='210' x2='352' y2='210' stroke='%231a6ef5' stroke-width='16'/%3E%3Ccircle cx='256' cy='210' r='32' fill='%231a6ef5'/%3E%3Ctext x='256' y='460' text-anchor='middle' fill='%23ffffff' font-size='48' font-family='Arial'%3EVirtual Lab%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["education", "science"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Class 8 Labs",
+      "url": "./index.html#class8",
+      "description": "Open Class 8 Simulations"
+    },
+    {
+      "name": "Class 9 Labs",
+      "url": "./index.html#class9",
+      "description": "Open Class 9 Simulations"
+    },
+    {
+      "name": "Class 10 Labs",
+      "url": "./index.html#class10",
+      "description": "Open Class 10 Simulations"
+    }
+  ]
+}

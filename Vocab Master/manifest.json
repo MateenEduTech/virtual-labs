@@ -1,0 +1,42 @@
+{
+  "name": "VocabMaster – NEP 2020 Vocabulary Builder",
+  "short_name": "VocabMaster",
+  "description": "AI-powered vocabulary builder aligned with NEP 2020 & NCF 2023 by Mateen Yousuf, SED J&K",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f2744",
+  "theme_color": "#1a3a5c",
+  "orientation": "portrait",
+  "scope": "./",
+  "categories": ["education"],
+  "lang": "en-IN",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230f2744'/><text x='96' y='130' font-size='100' text-anchor='middle'>📚</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230f2744'/><text x='256' y='360' font-size='280' text-anchor='middle'>📚</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Word of the Day",
+      "short_name": "Today's Word",
+      "description": "View today's featured vocabulary word",
+      "url": "./index.html#wotd"
+    },
+    {
+      "name": "Quick Quiz",
+      "short_name": "Quiz",
+      "description": "Start a vocabulary quiz",
+      "url": "./index.html#quiz"
+    }
+  ]
+}

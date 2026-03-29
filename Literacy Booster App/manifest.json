@@ -1,0 +1,16 @@
+{
+  "name": "Foundational Literacy Booster",
+  "short_name": "LiteracyBooster",
+  "description": "Every Child a Confident Reader. NEP 2020 & NCF-FS 2022 aligned foundational literacy app by Mateen Yousuf, Teacher, SED J&K.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1b2a",
+  "theme_color": "#1a3a5c",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "author.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+    { "src": "author.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
+  ],
+  "categories": ["education"],
+  "lang": "en-IN"
+}
