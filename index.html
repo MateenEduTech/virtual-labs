@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Labs & Apps</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  color: white;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.header p {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* GRID */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 25px;
+  max-width: 900px;
+  margin: auto;
+}
+
+/* CARD */
+.card {
+  background: rgba(255,255,255,0.15);
+  padding: 20px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+  backdrop-filter: blur(8px);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  background: rgba(255,255,255,0.3);
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.card p {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>Virtual Labs & Learning Apps</h1>
+  <p>Developed by Mateen Yousuf — School Education Department J&K</p>
+</div>
+
+<div class="container">
+
+  <a class="card" href="Virtual Science Lab/">
+    <h3>🔬 Virtual Science Lab</h3>
+    <p>Interactive science experiments</p>
+  </a>
+
+  <a class="card" href="Virtual Science Lab 1/">
+    <h3>🧪 Science Lab Advanced</h3>
+    <p>More advanced experiments</p>
+  </a>
+
+  <a class="card" href="Literacy Booster App/">
+    <h3>📖 Literacy Booster</h3>
+    <p>Improve reading & comprehension</p>
+  </a>
+
+  <a class="card" href="Vocab Master/">
+    <h3>🧠 Vocab Master</h3>
+    <p>Enhance vocabulary skills</p>
+  </a>
+
+  <a class="card" href="LinguaBridge PWA/">
+    <h3>🌐 LinguaBridge</h3>
+    <p>Language learning platform</p>
+  </a>
+
+</div>
+
+<div class="footer">
+  © 2026 • Smart Learning Tools 🚀
+</div>
+
+</body>
+</html>
